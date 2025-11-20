@@ -1,0 +1,1060 @@
+global:
+  generic:
+    lcg: &lcgGeneric "LCG_108_swan"
+    lcgText: &lcgTextGeneric "108"
+    platform: &platformGeneric "x86_64-el9-gcc13-opt"
+    platformText: &platformTextGeneric "AlmaLinux 9 (gcc13)"
+  cuda:
+    lcg: &lcgCuda "LCG_108_cuda"
+    lcgText: &lcgTextCuda "108 CUDA 12.5 (GPU)"
+    platform: &platformCuda "x86_64-el9-gcc13-opt"
+    platformText: &platformTextCuda "AlmaLinux 9 (gcc13)"
+  nxcals:
+    lcg:  &lcgNxcals "LCG_106a_nxcals_pro"
+    lcgText: &lcgTextNxcals "106a NXCALS PRO"
+    platform: &platformNxcals "x86_64-el9-gcc13-opt"
+    platformText: &platformTextNxcals "AlmaLinux 9 (gcc13)"
+
+optionsform:
+  header: "Specify the parameters that will be used to contextualise the container which is created for you. See <a target='_blank' href='https://swan.web.cern.ch'>SWAN service website</a> for more details and contact to administrators."
+  enable_customenv_form: "false"
+  enable_generate_url_form: "false"
+  enable_network_form: "false"
+  lcg_options:
+  - type: "label"
+    label:
+      value: "label1"
+      text: "Recommended releases (General Purpose)"
+  - type: "selection"
+    lcg:
+      value: *lcgGeneric
+      text: *lcgTextGeneric
+    platforms:
+    - value: *platformGeneric
+      text: *platformTextGeneric
+    cores:
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory:
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters:
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor:
+    - value: "none"
+      text: "None"
+    - value: "cern_condor"
+      text: "CERN HTCondor pool"
+  - type: "selection"
+    lcg:
+      value: *lcgNxcals
+      text: *lcgTextNxcals
+    platforms:
+    - value: *platformNxcals
+      text: *platformTextNxcals
+    cores:
+    - value: "4"
+      text: "4"
+    memory:
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters:
+    - value: "hadoop-nxcals"
+      text: "BE NXCALS (NXCals)"
+    - value: "none"
+      text: "None"
+    condor:
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg:
+      value: *lcgCuda
+      text: *lcgTextCuda
+    platforms:
+    - value: *platformCuda
+      text: *platformTextCuda
+    cores:
+    - value: "4"
+      text: "4"
+    memory:
+    - value: "16"
+      text: "16 GB"
+    - value: "32"
+      text: "32 GB"
+    clusters:
+    - value: "none"
+      text: "None"
+    condor:
+    - value: "none"
+      text: "None"
+  - type: "label"
+    label: 
+      value: "emptygpu"
+      text: ""
+  - type: "label"
+    label: 
+      value: "label2"
+      text: "Development releases (might be unstable)"
+  - type: "selection"
+    lcg: 
+      value: "devswan/latest"
+      text: "Bleeding Edge"
+    platforms: 
+    - value: "x86_64-el9-gcc13-opt"
+      text: "AlmaLinux 9 (gcc13)"
+    cores: 
+    - value: "2"
+      text: "2"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+    - value: "cern_condor"
+      text: "CERN HTCondor pool"
+  - type: "selection"
+    lcg: 
+      value: "LCG_106a_nxcals_testbed"
+      text: "106a NXCALS TESTBED"
+    platforms: 
+    - value: "x86_64-el9-gcc13-opt"
+      text: "AlmaLinux 9 (gcc13)"
+    cores: 
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "hadoop-nxcals"
+      text: "BE NXCALS (NXCals)"
+    - value: "none"
+      text: "None"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "devnxcals/latest"
+      text: "Bleeding Edge NXCALS TESTBED"
+    platforms: 
+    - value: "x86_64-el9-gcc13-opt"
+      text: "AlmaLinux 9 (gcc13)"
+    cores: 
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "hadoop-nxcals"
+      text: "BE NXCALS (NXCals)"
+    - value: "none"
+      text: "None"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "dev3cuda/latest"
+      text: "Bleeding Edge CUDA 12.4 (GPU)"
+    platforms: 
+    - value: "x86_64-el9-gcc13-opt"
+      text: "AlmaLinux 9 (gcc13)"
+    cores: 
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "16"
+      text: "16 GB"
+    - value: "32"
+      text: "32 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "label"
+    label: 
+      value: "empty2"
+      text: ""
+  - type: "label"
+    label: 
+      value: "label3"
+      text: "Other releases"
+  - type: "selection"
+    lcg:
+      value: "LCG_107_swan"
+      text: "107"
+    platforms:
+    - value: "x86_64-el9-gcc13-opt"
+      text: "AlmaLinux 9 (gcc13)"
+    cores:
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory:
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters:
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor:
+    - value: "none"
+      text: "None"
+    - value: "cern_condor"
+      text: "CERN HTCondor pool"
+  - type: "selection"
+    lcg:
+      value: "LCG_107_cuda"
+      text: "107 CUDA 12.5 (GPU)"
+    platforms:
+    - value: "x86_64-el9-gcc11-opt"
+      text: "AlmaLinux 9 (gcc11)"
+    cores:
+    - value: "4"
+      text: "4"
+    memory:
+    - value: "16"
+      text: "16 GB"
+    - value: "32"
+      text: "32 GB"
+    clusters:
+    - value: "none"
+      text: "None"
+    condor:
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg:
+      value: "LCG_106a_swan"
+      text: "106a"
+    platforms:
+    - value: "x86_64-el9-gcc13-opt"
+      text: "AlmaLinux 9 (gcc13)"
+    cores:
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory:
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters:
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor:
+    - value: "none"
+      text: "None"
+    - value: "cern_condor"
+      text: "CERN HTCondor pool"
+  - type: "selection"
+    lcg:
+      value: "LCG_106a_cuda"
+      text: "106a CUDA 12.3 (GPU)"
+    platforms:
+    - value: "x86_64-el9-gcc11-opt"
+      text: "AlmaLinux 9 (gcc11)"
+    cores:
+    - value: "4"
+      text: "4"
+    memory:
+    - value: "16"
+      text: "16 GB"
+    - value: "32"
+      text: "32 GB"
+    clusters:
+    - value: "none"
+      text: "None"
+    condor:
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg:
+      value: "LCG_105a_swan"
+      text: "105a"
+    platforms:
+    - value: "x86_64-el9-gcc13-opt"
+      text: "AlmaLinux 9 (gcc13)"
+    cores:
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory:
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters:
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor:
+    - value: "none"
+      text: "None"
+    - value: "cern_condor"
+      text: "CERN HTCondor pool"
+  - type: "selection"
+    lcg:
+      value: "LCG_105a_cuda"
+      text: "105a CUDA 11.8.89 (GPU)"
+    platforms:
+    - value: "x86_64-el9-gcc11-opt"
+      text: "AlmaLinux 9 (gcc11)"
+    cores:
+    - value: "4"
+      text: "4"
+    memory:
+    - value: "16"
+      text: "16 GB"
+    - value: "32"
+      text: "32 GB"
+    clusters:
+    - value: "none"
+      text: "None"
+    condor:
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_104a_swan"
+      text: "104a"
+    platforms: 
+    - value: "x86_64-centos7-gcc11-opt"
+      text: "CentOS 7 (gcc11)"
+    cores: 
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_104a_cuda"
+      text: "104a CUDA 11.8.89 (GPU)"
+    platforms: 
+    - value: "x86_64-centos7-gcc11-opt"
+      text: "CentOS 7 (gcc11)"
+    cores: 
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "16"
+      text: "16 GB"
+    - value: "32"
+      text: "32 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_103swan"
+      text: "103"
+    platforms: 
+    - value: "x86_64-centos7-gcc11-opt"
+      text: "CentOS 7 (gcc11)"
+    cores: 
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_103cuda"
+      text: "103 CUDA 11.8.89 (GPU)"
+    platforms: 
+    - value: "x86_64-centos7-gcc11-opt"
+      text: "CentOS 7 (gcc11)"
+    cores: 
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "16"
+      text: "16 GB"
+    - value: "32"
+      text: "32 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_102b_swan"
+      text: "102b"
+    platforms: 
+    - value: "x86_64-centos7-gcc11-opt"
+      text: "CentOS 7 (gcc11)"
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    cores: 
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_102b_cuda"
+      text: "102b CUDA 11.7.1 (GPU)"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    cores: 
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "16"
+      text: "16 GB"
+    - value: "32"
+      text: "32 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_102swan"
+      text: "102"
+    platforms: 
+    - value: "x86_64-centos7-gcc11-opt"
+      text: "CentOS 7 (gcc11)"
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    cores: 
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_102cuda"
+      text: "102 CUDA 11.2 (GPU)"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    cores: 
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_101swan"
+      text: "101"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    - value: "x86_64-centos7-gcc10-opt"
+      text: "CentOS 7 (gcc10)"
+    cores: 
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_101cuda"
+      text: "101 CUDA 11.2 (GPU)"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    cores: 
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_100"
+      text: "100"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    - value: "x86_64-centos7-gcc10-opt"
+      text: "CentOS 7 (gcc10)"
+    cores: 
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_99"
+      text: "99"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    - value: "x86_64-centos7-gcc10-opt"
+      text: "CentOS 7 (gcc10)"
+    cores: 
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_99cuda"
+      text: "99 CUDA 10.1 (GPU)"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    cores: 
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_99python2"
+      text: "99 Python2"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    cores: 
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_98py3cu10"
+      text: "98 CUDA 10 Python3"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    cores: 
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_95nxcalspython3_nxcals"
+      text: "NXCals Spark 2"
+    platforms: 
+    - value: "x86_64-centos7-gcc7-opt"
+      text: "CentOS 7 (gcc7)"
+    cores: 
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "hadoop-nxcals"
+      text: "BE NXCALS (NXCals)"
+    - value: "none"
+      text: "None"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_97apython3"
+      text: "97a (Spark2)"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    cores: 
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_97a"
+      text: "97a Python2"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    cores: 
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_96"
+      text: "96"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    cores: 
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_96python3"
+      text: "96 Python3"
+    platforms: 
+    - value: "x86_64-centos7-gcc8-opt"
+      text: "CentOS 7 (gcc8)"
+    cores: 
+    - value: "2"
+      text: "2"
+    - value: "4"
+      text: "4"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    - value: "10"
+      text: "10 GB"
+    - value: "16"
+      text: "16 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "k8s"
+      text: "Cloud Containers (K8s)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_95a"
+      text: "95a"
+    platforms: 
+    - value: "x86_64-centos7-gcc7-opt"
+      text: "CentOS 7 (gcc7)"
+    cores: 
+    - value: "2"
+      text: "2"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_95apython3"
+      text: "95a Python3"
+    platforms: 
+    - value: "x86_64-centos7-gcc7-opt"
+      text: "CentOS 7 (gcc7)"
+    cores: 
+    - value: "2"
+      text: "2"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_94"
+      text: "94"
+    platforms: 
+    - value: "x86_64-centos7-gcc7-opt"
+      text: "CentOS 7 (gcc7)"
+    cores: 
+    - value: "2"
+      text: "2"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_94python3"
+      text: "94 Python3"
+    platforms: 
+    - value: "x86_64-centos7-gcc7-opt"
+      text: "CentOS 7 (gcc7)"
+    cores: 
+    - value: "2"
+      text: "2"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_93"
+      text: "93"
+    platforms: 
+    - value: "x86_64-centos7-gcc7-opt"
+      text: "CentOS 7 (gcc7)"
+    cores: 
+    - value: "2"
+      text: "2"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"
+  - type: "selection"
+    lcg: 
+      value: "LCG_93python3"
+      text: "93 Python3"
+    platforms: 
+    - value: "x86_64-centos7-gcc7-opt"
+      text: "CentOS 7 (gcc7)"
+    cores: 
+    - value: "2"
+      text: "2"
+    memory: 
+    - value: "8"
+      text: "8 GB"
+    clusters: 
+    - value: "none"
+      text: "None"
+    - value: "hadoop-analytix"
+      text: "General Purpose (Analytix)"
+    - value: "hadoop-qa"
+      text: "QA"
+    condor: 
+    - value: "none"
+      text: "None"

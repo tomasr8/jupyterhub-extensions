@@ -71,10 +71,7 @@ def define_SwanSpawner_from(base_class):
 
         eos_special_type = 'eos'
 
-        options_form_config = Unicode(
-            config=True,
-            help='Path to configuration file for options_form rendering.'
-        )
+        options_form_config = "options_form.yaml"
 
         general_domain_name = Unicode(
             default_value='swan.cern.ch',

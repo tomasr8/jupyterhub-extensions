@@ -6,53 +6,43 @@
 {% block main %}
 
 
-<div class="container">
-  <div class="row">
-    <div class="swan-info">
-      <div id="swan-loader">
-        <div class="loader-circle">
-          <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}">
-        </div>
-        <div class="loader-line-mask">
-          <div class="loader-line"></div>
-        </div>
-        <span class="text"></span>
+<div id="configuration-form" class="form-container">
+  <form enctype="multipart/form-data" id="spawn_form" action="{{ url | safe }}" method="post" role="form">
+    <div class="form-header">
+      <h1>Configure Environment</h1>
+    </div>
+    <div class="form-content">
+      {% if error_message %}
+      <div class="alert alert-dismissable alert-danger">
+        <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+        <p>{{error_message | safe}}</p>
+      </div>
+      {% endif %}
+      <div id="spawner-options">
+        {{spawner_options_form | safe}}
       </div>
     </div>
-  </div>
-</div>
-
-<div id="configuration-modal" class="modal fade right" role="dialog">
-  <form enctype="multipart/form-data" id="spawn_form" action="{{ url | safe }}" method="post" role="form">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-          <h4 class="modal-title">Configure Environment</h4>
-        </div>
-        <div class="modal-body">
-          {% if error_message %}
-          <div class="alert alert-dismissable alert-danger">
-            <button class="close" type="button" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-            <p>{{error_message | safe}}</p>
-          </div>
-          {% endif %}
-          <div id="spawner-options">
-            {{spawner_options_form | safe}}
-          </div>
-        </div>
-        <div class="modal-footer">
-          {% if save_config %}<div class="keep-config">
-            <input type="checkbox" id="keep-config" name="keep-config" class="keep-config-checkbox"><label
-              for="keep-config"> Always start with this configuration</label>
-          </div>{% endif %}
-          <input type="submit" id="spawn" value="Start my Session" class="btn btn-default btn-primary size-100">
-        </div>
-      </div>
+    <div class="form-footer">
+      {% if save_config %}<div class="keep-config">
+        <input type="checkbox" id="keep-config" name="keep-config" class="keep-config-checkbox"><label
+          for="keep-config"> Always start with this configuration</label>
+      </div>{% endif %}
+      <input type="submit" id="spawn" value="Start my Session" class="btn btn-default btn-primary size-100">
     </div>
   </form>
+
+  <!-- SWAN Logo - displayed during session startup -->
+  <div id="swan-loader" class="swan-loader-overlay" style="display: none;">
+    <div class="loader-circle">
+      <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}">
+    </div>
+    <div class="loader-line-mask">
+      <div class="loader-line"></div>
+    </div>
+    <span class="text"></span>
+  </div>
 </div>
 
 {% endblock %}
@@ -60,18 +50,12 @@
 {% block script %}
 <script type="text/javascript">
 
-  require(['jquery', 'bootstrap'], function ($) {
+  require(['jquery'], function ($) {
 
-    $('#swan-loader .loader-line-mask').hide();
     $("#spawner-options").find("input, select, textarea, button").addClass("form-control");
-    var loader = $('#swan-loader .loader-line-mask');
+    var loader = $('#swan-loader');
+    var loaderMask = $('#swan-loader .loader-line-mask');
     var message = $('#swan-loader .text');
-    var starting = false;
-
-    var modal = $('#configuration-modal').modal({
-      backdrop: 'static',
-      keyboard: false
-    });
 
     /*
     * This function keeps the "use-tn" checkbox in sync, whether the cluster is exposed to the TN or not.
@@ -85,39 +69,16 @@
     $('#spawn').on('click', function (e) {
       const form = document.getElementById('spawn_form');
 
-      // If form is valid, continue with modal hide
-      if (form.checkValidity()) { 
-        starting = true;
-        modal.modal('hide');
-      }
-    });
-
-    modal.on('shown.bs.modal', function () {
-      $('#spawn').focus();
-      updateUseTnCheckbox();
-    });
-
-    modal.on('hidden.bs.modal', function () {
-      if (starting) {
-        loader.show()
+      // If form is valid, show the loader overlay
+      if (form.checkValidity()) {
+        loaderMask.show();
         message.text("Starting your session");
-      } else {
-        var a = $('<a>')
-                  .text("Open configuration menu")
-                  .attr('href', 'javascript:')
-                  .on('click', function(){
-                    message.hide();
-                    modal.modal('show')
-                  });
-
-        var p = $('<p>')
-                  .addClass('extra')
-                  .append(a)
-
-        message.html(p);
+        loader.show();
       }
-      message.show();
     });
+
+    // Initialize on page load
+    updateUseTnCheckbox();
 
     // This runs when user comes back via browser history (e.g. Back button)
     window.onpageshow = function(event) {
