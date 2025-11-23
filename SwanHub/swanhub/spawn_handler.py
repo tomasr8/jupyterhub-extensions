@@ -223,6 +223,7 @@ class SpawnHandler(JHSpawnHandler):
         self.redirect(next_url)
 
     async def _render_form_wrapper(self, for_user, message=''):
+        # for_user.spawner.handler = self
         spawner_options_form = await for_user.spawner.get_options_form()
         form = await self._render_form(for_user, spawner_options_form, message)
         return form

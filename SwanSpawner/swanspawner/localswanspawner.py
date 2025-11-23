@@ -26,7 +26,12 @@ class LocalSwanSpawner(_LocalSwanSpawner):
             with open(self.options_form_config) as yaml_file:
                 options_form_config = yaml.safe_load(yaml_file)
             conf = options_form_config["optionsform"]
-            return template.render(options_form_config=conf, dynamic_form_info=json.dumps(self._dynamic_form_info), general_domain_name=self.general_domain_name, ats_domain_name=self.ats_domain_name)
+            return template.render(options_form_config=conf,
+                                   dynamic_form_info=json.dumps(self._dynamic_form_info),
+                                   general_domain_name=self.general_domain_name,
+                                   ats_domain_name=self.ats_domain_name,
+                                   # https://github.com/jupyterhub/jupyterhub/pull/2237
+                                   static_url=self.handler.static_url)
         except Exception as ex:
             self.log.error("Could not initialize form: %s", ex, exc_info=True)
             raise RuntimeError(

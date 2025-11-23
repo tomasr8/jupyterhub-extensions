@@ -25,6 +25,7 @@ swanhub = "swanhub.app:main"
 
 [build-system]
 requires = ["hatchling==1.27.0"]
+# requires = ["hatchling==1.27.0", "hatch-jupyter-builder==0.9.1"]
 build-backend = "hatchling.build"
 
 [tool.hatch]

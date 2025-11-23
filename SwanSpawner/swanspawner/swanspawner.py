@@ -15,6 +15,7 @@ from traitlets import (
 )
 
 from jinja2 import Environment, FileSystemLoader
+from jupyterhub.utils import url_path_join
 
 def define_SwanSpawner_from(base_class):
     """
@@ -449,16 +450,37 @@ def define_SwanSpawner_from(base_class):
 
         def _render_templated_options_form(self, spawner):
             """
-            Render a form from a template based on options_form_config yaml config file
-            """
-            templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
-            env = Environment(loader=FileSystemLoader(templates_dir))
-            template = env.get_template('options_form_template.html')
+            Render a form from a template based on options_form_config yaml config file.
 
+            The handler can set self._handler_render_template to use the handler's render_template
+            for proper cache-busting and full template context. Otherwise, falls back to manual rendering.
+            """
             try:
                 with open(self.options_form_config) as yaml_file:
                     options_form_config = yaml.safe_load(yaml_file)
-                return template.render(options_form_config=options_form_config, dynamic_form_info=json.dumps(self._dynamic_form_info), general_domain_name=self.general_domain_name, ats_domain_name=self.ats_domain_name)
+
+                template_vars = {
+                    'options_form_config': options_form_config,
+                    'dynamic_form_info': json.dumps(self._dynamic_form_info),
+                    'general_domain_name': self.general_domain_name,
+                    'ats_domain_name': self.ats_domain_name,
+                }
+
+                render_template = getattr(self, '_handler_render_template', None)
+                if render_template:
+                    # Use handler's render_template for proper cache-busting and context
+                    return render_template('swanspawner/options_form_template.html', **template_vars)
+                else:
+                    # Fallback: render manually without cache-busting
+                    templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+                    env = Environment(loader=FileSystemLoader(templates_dir))
+                    template = env.get_template('options_form_template.html')
+
+                    def static_url(path):
+                        return url_path_join(self.hub.base_url, 'static', path)
+
+                    template_vars['static_url'] = static_url
+                    return template.render(**template_vars)
             except Exception as ex:
                 self.log.error("Could not initialize form: %s", ex, exc_info=True)
                 raise RuntimeError(

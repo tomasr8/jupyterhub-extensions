@@ -11,3 +11,17 @@ Repository that stores all the JupyterHub extensions for SWAN.
 #### Create a release
 
 The creation of a new release in this repo is now automated. Just run the Github action "Release" manually, and specify the extension name and the increment type.
+
+#### Development
+
+- Dev hub config: `hub_config.py`
+- Start hub:
+
+```bash
+JUPYTERHUB_CRYPT_KEY=<32bytes> \
+OAUTH_CLIENT_ID=swan-qa \
+OAUTH_CLIENT_SECRET=<CLIENT_SECRET> \
+swanhub -f hub_config.py
+```
+
+#TODO: Set some env var for development?

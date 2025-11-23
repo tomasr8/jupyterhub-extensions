@@ -34,3 +34,6 @@ version = { path = "swanspawner/_version.py" }
 
 [tool.hatch.build]
 packages = ["swanspawner"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"swanspawner/static" = "share/jupyterhub/static/swanspawner"

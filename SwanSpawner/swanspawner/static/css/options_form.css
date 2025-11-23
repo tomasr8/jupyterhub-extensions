@@ -1,0 +1,51 @@
+.nb {
+    font-weight: normal;
+}
+.nbs {
+    font-weight: normal;
+    font-size: small;
+}
+.news {
+    font-weight: normal;
+    background-color: yellow;
+}
+#clipboard_config {
+    float: right;
+    position: relative;
+    cursor: pointer;
+    width: fit-content;
+    border: 1px solid #0053a1;
+    border-radius: 8px;
+    padding: 5px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+#clipboard_config:hover {
+    transform: scale(1.05);
+}
+#tooltip {
+    position: absolute;
+    right: 110%;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+#clipboard_config:hover #tooltip {
+    display: block;
+    opacity: 1;
+}
+#extra_options {
+    transition: transform 0.2s ease;
+    margin-right: 5px;
+}
+.checkbox-locked {
+    pointer-events: none;
+    opacity: 0.6;
+}
