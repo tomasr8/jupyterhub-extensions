@@ -14,6 +14,9 @@ The creation of a new release in this repo is now automated. Just run the Github
 
 #### Development
 
+- Disable cache in your devtools (FF/Chrome: Network tab -> Disable Cache)
+- Install dev dependencies: `uv pip install --group dev`
+
 - Dev hub config: `hub_config.py`
 - Start hub:
 

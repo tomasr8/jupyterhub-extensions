@@ -1,2 +1,2 @@
 // SwanHub main JavaScript module
-console.log('rip !!! SwanHub static assets are being served correctly!');
+console.log('bar rip !!! SwanHub static assets are being served correctly!');
