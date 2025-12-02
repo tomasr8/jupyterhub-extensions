@@ -116,7 +116,7 @@ class SpawnHandler(JHSpawnHandler):
             server_name = ""
         return self._post(user_name=user_name, server_name=server_name)
 
-    # @needs_scope("servers")
+    @needs_scope("servers")
     async def _post(self, user_name, server_name):
         configs = SpawnHandlersConfigs.instance()
         for_user = user_name

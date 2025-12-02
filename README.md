@@ -28,3 +28,42 @@ swanhub -f hub_config.py
 ```
 
 #TODO: Set some env var for development?
+
+
+# Dev Notes
+
+## Check Docker logs (even if the container failed to start)
+
+docker ps -a
+docker logs <CONTAINER_ID>
+
+## SWAN
+
+### Dummy auth (lets anyone through)
+
+```python
+c.JupyterHub.authenticator_class = "dummy"
+```
+
+### Dummy local process spawner (does not require the UNIX user to exist)
+
+```python
+c.JupyterHub.spawner_class = "simple"
+```
+
+### Spawn the proxy in a separate to make it easy to inspect ther routes:
+
+```python
+c.ConfigurableHTTPProxy.should_start = False
+c.ConfigurableHTTPProxy.auth_token = 'aaaa'
+```
+
+and then spawn the proxy with the `--insecure` flag
+
+```bash
+configurable-http-proxy --insecure
+```
+
+### `A Jupyter Server is running.` shows after starting a notebook
+
+To fix it, install some jupyter extension, otherwise no UI will show (e.g. pip install jupyterlab)

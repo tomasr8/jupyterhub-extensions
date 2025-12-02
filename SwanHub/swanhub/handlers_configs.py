@@ -80,7 +80,7 @@ class SpawnHandlersConfigs(SingletonConfigurable):
     )
 
     metrics_on = Bool(
-        default_value=True,
+        default_value=False,
         config=True,
         help="If True, it will send the metrics to CERN grafana (temporary, we will separate the metrics from the spwaner)."
     )

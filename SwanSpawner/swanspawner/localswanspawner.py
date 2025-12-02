@@ -3,17 +3,19 @@ import json
 import yaml
 from jinja2 import Environment, FileSystemLoader
 
-from jupyterhub.spawner import LocalProcessSpawner
+from jupyterhub.spawner import SimpleLocalProcessSpawner
 
 from swanspawner.swanspawner import define_SwanSpawner_from
 
 
-_LocalSwanSpawner = define_SwanSpawner_from(LocalProcessSpawner)
-
+# https://github.com/jupyterhub/jupyterhub/blob/3800ceaf9edf33a0171922b93ea3d94f87aa8d91/jupyterhub/spawner.py#L1647
+_LocalSwanSpawner = define_SwanSpawner_from(SimpleLocalProcessSpawner)
 
 class LocalSwanSpawner(_LocalSwanSpawner):
     """A SwanSpawner variant for local process spawning (for testing/development)."""
-    
+
+    options_form_config = "options_form.yaml"
+
     def _render_templated_options_form(self, spawner):
         """
         Render a form from a template based on options_form_config yaml config file
@@ -25,8 +27,7 @@ class LocalSwanSpawner(_LocalSwanSpawner):
         try:
             with open(self.options_form_config) as yaml_file:
                 options_form_config = yaml.safe_load(yaml_file)
-            conf = options_form_config["optionsform"]
-            return template.render(options_form_config=conf,
+            return template.render(options_form_config=options_form_config,
                                    dynamic_form_info=json.dumps(self._dynamic_form_info),
                                    general_domain_name=self.general_domain_name,
                                    ats_domain_name=self.ats_domain_name,
@@ -39,5 +40,6 @@ class LocalSwanSpawner(_LocalSwanSpawner):
                 Could not initialize form, invalid format
                 """)
 
-    def options_from_form(self, formdata: dict) -> dict:
-        return {}
+    def get_env(self):
+        # Skip the SwanSpawnwer.get_env which incompatible with SimpleLocalProcessSpawner
+        return SimpleLocalProcessSpawner.get_env(self)

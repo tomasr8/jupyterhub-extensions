@@ -106,3 +106,7 @@ SwanHub/swanhub/static/css/style.css
 
 # ruff
 .ruff_cache/
+
+# JH
+jupyterhub.sqlite
+jupyterhub_cookie_secret

@@ -15,7 +15,13 @@ c.KeyCloakAuthenticator.allowed_roles = []
 # Specify the role to set a user as admin
 c.KeyCloakAuthenticator.admin_role = 'swan-admins'
 
+# c.JupyterHub.authenticator_class = "dummy"
 # c.Authenticator.allow_all = True
 
 # Set the spawner class to SwanSpawner
 c.JupyterHub.spawner_class = "swanspawner.localswanspawner.LocalSwanSpawner"
+# c.JupyterHub.spawner_class = "swanspawner.localdockerspawner.LocalDockerSwanSpawner"
+# c.JupyterHub.spawner_class = "simple"
+
+c.ConfigurableHTTPProxy.should_start = False
+c.ConfigurableHTTPProxy.auth_token = 'aaaa'
