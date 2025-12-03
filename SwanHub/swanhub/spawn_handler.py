@@ -231,7 +231,6 @@ class SpawnHandler(JHSpawnHandler):
     async def _render_form(self, for_user, spawner_options_form, message=''):
         configs = SpawnHandlersConfigs.instance()
         auth_state = await for_user.get_auth_state()
-        # print("OPTIONS FORM:", spawner_options_form)
         save_config = not configs.local_home and not self.allow_named_servers
 
         return await self.render_template('spawn.html',

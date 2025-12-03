@@ -73,7 +73,5 @@ class SWAN(app.JupyterHub):
                 cur_handler = list(cur_handler)
                 cur_handler[1] = new_handler
                 self.handlers[i] = tuple(cur_handler)
-        for handler in self.handlers:
-            self.log.info(f'handler: {handler!r}')
 
 main = SWAN.launch_instance
