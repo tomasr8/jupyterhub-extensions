@@ -1,4 +1,6 @@
-c.JupyterHub.authenticator_class = "keycloakauthenticator.auth.KeyCloakAuthenticator"
+# Auth configuration
+# ================================================
+c.JupyterHub.authenticator_class = 'keycloakauthenticator.auth.KeyCloakAuthenticator'
 c.KeyCloakAuthenticator.username_claim = 'preferred_username'
 
 # URL to redirect to after logout is complete with auth provider.
@@ -15,13 +17,18 @@ c.KeyCloakAuthenticator.allowed_roles = []
 # Specify the role to set a user as admin
 c.KeyCloakAuthenticator.admin_role = 'swan-admins'
 
-# c.JupyterHub.authenticator_class = "dummy"
-# c.Authenticator.allow_all = True
+# Spawner configuration
+# ================================================
 
-# Set the spawner class to SwanSpawner
-c.JupyterHub.spawner_class = "swanspawner.localswanspawner.LocalSwanSpawner"
-# c.JupyterHub.spawner_class = "swanspawner.localdockerspawner.LocalDockerSwanSpawner"
-# c.JupyterHub.spawner_class = "simple"
+# Use a custom local process spawner:
+# TODO: Figure out how to use our user image with a docker spawner
+c.JupyterHub.spawner_class = 'swanspawner.localswanspawner.LocalSwanSpawner'
 
+# Proxy configuration (Optional)
+# ================================================
+
+# Do not start a proxy automatically
+# Start your own proxy with: `configurable-http-proxy --insecure`
+# This makes it easy to inspect the proxy state (no auth required, you can directly query e.g. /api/routes)
 c.ConfigurableHTTPProxy.should_start = False
-c.ConfigurableHTTPProxy.auth_token = 'aaaa'
+c.ConfigurableHTTPProxy.auth_token = 'abcd'

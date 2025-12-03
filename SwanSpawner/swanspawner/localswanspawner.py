@@ -8,10 +8,7 @@ from jupyterhub.spawner import SimpleLocalProcessSpawner
 from swanspawner.swanspawner import define_SwanSpawner_from
 
 
-# https://github.com/jupyterhub/jupyterhub/blob/3800ceaf9edf33a0171922b93ea3d94f87aa8d91/jupyterhub/spawner.py#L1647
-_LocalSwanSpawner = define_SwanSpawner_from(SimpleLocalProcessSpawner)
-
-class LocalSwanSpawner(_LocalSwanSpawner):
+class LocalSwanSpawner(define_SwanSpawner_from(SimpleLocalProcessSpawner)):
     """A SwanSpawner variant for local process spawning (for testing/development)."""
 
     options_form_config = "options_form.yaml"
