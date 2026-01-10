@@ -22,16 +22,12 @@ handlers_map = {
 class SWAN(app.JupyterHub):
     name = 'swan'
 
-    @default('template_paths')
-    def _template_paths_default(self):
-        return [get_templates(), os.path.join(self.data_files_path, 'templates')]
-
     @default('logo_file')
     def _logo_file_default(self):
         return os.path.join(
             self.data_files_path, 'static', 'swan', 'logos', 'logo_swan_cloudhisto.png'
         )
-    
+
     @default('load_roles')
     def _load_roles_default(self):
         # Ensure that users can see their own auth_state
@@ -49,6 +45,10 @@ class SWAN(app.JupyterHub):
             }
         ]
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.template_paths = [get_templates()]
+
     def init_tornado_settings(self):
         self.template_vars['current_year'] = datetime.datetime.now().year # For copyright message
         if datetime.date.today().month == 12:
@@ -57,11 +57,6 @@ class SWAN(app.JupyterHub):
         else:
             self.template_vars['swan_logo_filename'] = 'logo_swan_letters.png' 
 
-        # Add our templates to the end of the list to be used as fallback
-        # The upstream templates will be added to the end in the parent init_tornado_settings as well
-        for template_path in self._template_paths_default():
-            if template_path not in self.template_paths:
-                self.template_paths.append(template_path)
         super().init_tornado_settings()
 
     def init_handlers(self):
