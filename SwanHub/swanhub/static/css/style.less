@@ -267,8 +267,8 @@ footer {
     bottom: 0;
     width: 100%;
     height: @footer-height;
-    background-color: @footer-background;
-    border-top: solid 1px @footer-border;
+    // Same as the header background color
+    background-color: rgb(var(--bs-tertiary-bg-rgb));
     font-size: @size-6;
 
     .container {
@@ -278,8 +278,6 @@ footer {
             height: inherit;
 
             .logo {
-                text-align: right;
-
                 img {
                     margin: 14px 0;
                     height: @footer-height - 30px;
@@ -312,12 +310,12 @@ footer {
                     }
                 }
             }
-
-            .text-muted {
-                color: @grey-6;
-            }
         }
     }
+}
+
+[data-bs-theme="dark"] footer .logo img {
+    filter: invert(1);
 }
 
 .end_space {
