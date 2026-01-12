@@ -609,17 +609,7 @@ ul#options-menu {
         border: solid 1px @color-primary !important;
     }
 
-    .modal-content {
-        border-radius: 0;
-        border: none;
-    }
-
     .modal-header {
-        background-color: transparent;
-        border-bottom: none;
-        cursor: inherit;
-        padding: 12px @modal-padding 0 @modal-padding;
-
         h4 {
             .h1-mixin();
         }
@@ -631,15 +621,6 @@ ul#options-menu {
         font-weight: 700;
         font-size: 14px;
         line-height: 1.42857143;
-    }
-
-    .modal-body {
-        padding: @modal-padding;
-    }
-
-    .modal-footer {
-        border: 0;
-        padding: 0 @modal-padding @modal-padding;
     }
 
     &.right {
@@ -851,16 +832,6 @@ ul#options-menu {
                 padding-bottom: 9px;
             }
         }
-    }
-}
-
-#configuration-modal {
-
-    .modal-body {
-        height: ~"-moz-calc(100% - 165px)";
-        height: ~"-webkit-calc(100% - 165px)";
-        height: ~"-o-calc(100% - 165px)";
-        height: ~"calc(100% - 165px)";
     }
 }
 
