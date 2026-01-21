@@ -1,5 +1,5 @@
 [project]
-name = "keycloakauthenticator"
+name = "tomasr-keycloakauthenticator"
 dynamic = ["version"]
 description = "KeyCloakAuthenticator: Authenticate JupyterHub users with KeyCloak and OIDC"
 readme = "README.md"

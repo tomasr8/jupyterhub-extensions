@@ -1,5 +1,5 @@
 [project]
-name = "swanculler"
+name = "tomasr-swanculler"
 dynamic = ["version"]
 description = "Culler for JupyterHub"
 readme = "README.md"

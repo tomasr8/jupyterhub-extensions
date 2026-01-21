@@ -1,5 +1,5 @@
 [project]
-name = "swannotificationsservice"
+name = "tomasr-swannotificationsservice"
 dynamic = ["version"]
 description = "JupyterHub service to expose notifications for Jupyter"
 readme = "README.md"

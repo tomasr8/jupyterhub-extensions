@@ -1,5 +1,5 @@
 [project]
-name = "swanspawner"
+name = "tomasr-swanspawner"
 dynamic = ["version"]
 description = "SWAN JupyterHub spawner"
 readme = "README.md"

@@ -1,5 +1,5 @@
 [project]
-name = "swanhub"
+name = "tomasr-swanhub"
 dynamic = ["version"]
 description = "Custom SWAN templates and handlers for JupyterHub"
 readme = "README.md"
