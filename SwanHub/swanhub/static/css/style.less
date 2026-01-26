@@ -19,15 +19,15 @@
         local('Roboto'), 
          url(fonts/Roboto-400.ttf) format('truetype');
 }
-  
+
 html {
-    position: relative;
-    min-height: 100%;
+    height: 100%;
 }
 
 body {
-    margin-bottom: @footer-height;
-    position: static;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 #site {
@@ -267,13 +267,10 @@ header {
 }
 
 footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: @footer-height;
+    // Fix footer to bottom of the page
+    margin-top: auto;
     // Same as the header background color
     background-color: rgb(var(--bs-tertiary-bg-rgb));
-    font-size: @size-6;
 
     .container {
 
@@ -283,8 +280,8 @@ footer {
 
             .logo {
                 img {
-                    margin: 14px 0;
-                    height: @footer-height - 30px;
+                    margin: auto 0;
+                    height: 55px;
                 }
             }
 
