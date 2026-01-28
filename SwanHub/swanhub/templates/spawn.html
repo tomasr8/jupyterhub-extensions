@@ -20,11 +20,15 @@
         <div id="spawner-options">
           {{spawner_options_form | safe}}
         </div>
+        {% if save_config %}
+          <div class="form-check mb-3">
+            <input type="checkbox" id="keep-config" name="keep-config" class="form-check-input">
+            <label for="keep-config" class="form-check-label">
+              Always start with this configuration
+            </label>
+          </div>
+        {% endif %}
         <div class="w-100 text-center">
-          {% if save_config %}<div class="keep-config">
-            <input type="checkbox" id="keep-config" name="keep-config" class="keep-config-checkbox"><label
-              for="keep-config">Always start with this configuration</label>
-          </div>{% endif %}
           <button type="submit" id="spawn" class="btn btn-default btn-primary btn-lg w-100">
             <span id="submit-spinner" class="d-none">
               <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>

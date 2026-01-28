@@ -722,17 +722,18 @@
         <div style="display:none;" id="userInterfaceDetails">
             <span class='nb'>JupyterLab is the latest web-based interactive development environment for notebooks, code and data. More information <a target="_blank" href="https://jupyterlab.readthedocs.io/en/stable/user/interface.html">here</a>.</span>
         </div>
-        <div class="alert alert-warning" style="display: flex; align-items: center">
+        <div class="alert alert-warning">
             <input
                 id="use-jupyterlab"
                 type="checkbox"
                 name="use-jupyterlab"
                 value="checked"
-                class="form-control"
-                style="display: inline; width: initial; margin: 0 8px 0 0"
+                class="form-check-input me-1"
                 onchange="adjustPlatforms(true);"
             />
-            <span>Try the new JupyterLab interface (experimental)</span>
+            <label for="use-jupyterlab" class="form-check-label">
+                Try the new JupyterLab interface (experimental)
+            </label>
         </div>
 
         <div id="software_source_selection">
@@ -762,17 +763,18 @@
                 </div>
             </label>
             <select id="lcgOptions" name="lcg" onchange="adjustForm(lcg_source);" required class="form-control"></select>
-            <div style="display: flex; align-items: center">
+            <div class="form-check">
                 <input
-                  id="use-local-packages"
-                  type="checkbox"
-                  name="use-local-packages"
-                  value="checked"
-                  class="form-control"
-                  style="display: inline; width: initial; margin: 0 8px 0 0"
-                  onchange="adjustPlatforms(true);"
+                    id="use-local-packages"
+                    type="checkbox"
+                    name="use-local-packages"
+                    value="checked"
+                    class="form-check-input"
+                    onchange="adjustPlatforms(true);"
                 />
-                <span> Use Python packages installed on CERNBox</span>
+                <label for="use-local-packages" class="form-check-label">
+                    Use Python packages installed on CERNBox
+                </label>
             </div>
             <br>
         </div>
@@ -836,9 +838,11 @@
     <div id="network_config" style="margin-bottom: 30px;">
         <h2>Network</h2>
 
-        <div id="tnSection">
-            <input type="checkbox" id="use-tn" name="use-tn" onchange="accessTN(this.checked);" class="form-control" style="width: auto; height: auto; display: inline-block;">
-            <label style="width: auto; height: auto; display: inline-block;" for="use-tn">TN Access</label>
+        <div id="tnSection" class="form-check">
+            <input type="checkbox" id="use-tn" name="use-tn" onchange="accessTN(this.checked);" class="form-check-input">
+            <label for="use-tn" class="form-check-label">
+                TN Access
+            </label>
             <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('use-tnDetails');"><span class='nbs'>more...</span></button>
             <div style="display:none;" id="use-tnDetails">
                 <span class='nb'>Request a user session that is exposed to the CERN Technical Network.</span>
