@@ -82,21 +82,40 @@
   </table>
 </div>
 {% else %}
-<div class="container">
-  <div class="row">
-    <div class="swan-info">
-      <div id="swan-loader">
-        <div class="loader-circle">
-          <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}">
-        </div>
-        <div class="loader-line-mask">
-          <div class="loader-line"></div>
-        </div>
-        <span class="text">Starting SWAN</span>
+  <main class="container d-flex align-items-center justify-content-center" style="min-height: 70vh;">
+    <div id="welcome" class="text-center d-none">
+      <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}" alt="SWAN Logo" class="mb-3" style="max-width: 150px; height: auto;">
+      <h1 class="display-6 fw-light text-primary mb-1">Welcome to SWAN</h1>
+      <h2 class="text-body-secondary mb-4">Your gateway to interactive analysis</h2>
+
+      {# Start new session #}
+      <a href="{{ base_url }}spawn" class="btn btn-primary btn-lg px-4 mb-5">
+        <i class="fa fa-rocket me-2"></i> Start new session
+      </a>
+
+      {# Help links #}
+      <div class="d-flex justify-content-center gap-3">
+        <a href="https://swan.docs.cern.ch/" target="_blank" class="btn btn-sm btn-outline-secondary">
+          <i class="fa fa-book me-1"></i> Documentation
+        </a>
+        <a href="https://swan-gallery.web.cern.ch/" target="_blank" class="btn btn-sm btn-outline-secondary">
+          <i class="fa fa-th me-1"></i> Examples
+        </a>
       </div>
     </div>
-  </div>
-</div>
+
+    {# Loading Modal #}
+    <div id="swan-loader" class="d-none flex-column align-items-center justify-content-center gap-3 py-5 animate">
+      <div class="loader-ring">
+        <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}" alt="SWAN logo">
+      </div>
+      <span class="loader-text text-body-secondary">Shutting down your session...</span>
+      {# Error alert, shown when the API request fails #}
+      <div class="error-text alert alert-danger" role="alert">
+        There was an error shutting down your session. Try again later.
+      </div>
+    </div>
+  </main>
 {% endif %}
 
 {% endblock %}
@@ -110,31 +129,34 @@
 </script>
 {% else %}
 <script type="text/javascript">
+  require(['jhapi'], function (JHAPI) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const welcome = document.getElementById('welcome');
+    const loader = document.getElementById('swan-loader');
+    const error = document.getElementById('error');
 
-  require(['jquery', 'jhapi'], function ($, JHAPI) {
-
-    var urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('changeconfig')) {
       urlParams.delete('changeconfig');
+      // Show the loading spinner
+      loader.classList.add('d-flex');
+      loader.classList.remove('d-none');
 
-      $('#swan-loader .text').text('Shutting down your session');
-
-      var base_url = window.jhdata.base_url;
-      var user = window.jhdata.user;
-      var api = new JHAPI(base_url);
+      const base_url = window.jhdata.base_url;
+      const user = window.jhdata.user;
+      const api = new JHAPI(base_url);
 
       api.stop_server(user, {
-        success: function () {
-          window.location.replace('{{base_url}}spawn?' + urlParams.toString());
+        success: () => {
+          {# window.location.replace(`{{base_url}}spawn?${urlParams}`); #}
         },
-        error: function () {
-          $('#swan-loader .text').html('<p class="extra">There was an error shutting down your session.<br>Try again later.<br><a href="{{base_url}}">Click here to return to SWAN</a></p>');
-          $('#swan-loader .loader-line-mask').hide();
+        error: () => {
+          // Show the error message and stop the loading animation
+          loader.classList.add('error');
+          loader.classList.remove('animate');
         }
       });
-
     } else {
-      window.location.replace('{{ url }}');
+      welcome.classList.remove('d-none');
     }
   });
 </script>
