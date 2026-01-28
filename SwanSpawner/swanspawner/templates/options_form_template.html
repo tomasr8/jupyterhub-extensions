@@ -805,39 +805,34 @@
 
     <!-- Custom environment configuration -->
     <div id="customenv_config">
-        <div id="repositorySection">
+        <div id="repositorySection" class="mb-3">
             <label for="repositoryOption">Repository 
                 <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('repositoryDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="repositoryDetails">
                     <span class='nb'>URL of a git repository containing a requirements file.</span>
                 </div>
             </label>
-            <br>
-            <div style="display: flex;">
-                <input 
-                    type="text"
-                    id="repositoryOption"
-                    name="repository"
-                    placeholder="e.g. https://gitlab.cern.ch/user/myrepo"
-                    oninput="validateRepositoryInput(this);"
-                    class="form-control"
-                />
-            </div>
-            <br>
+            <input 
+                type="text"
+                id="repositoryOption"
+                name="repository"
+                placeholder="e.g. https://gitlab.cern.ch/user/myrepo"
+                oninput="validateRepositoryInput(this);"
+                class="form-control"
+            />
         </div>
 
-        <div id="builderSection">
+        <div id="builderSection" class="mb-4">
             <label for="builderOptions">Builder <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('builderDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="builderDetails">
                     <span class='nb'>Acc-Py release to build the custom environment.</a></span>
                 </div>
             </label>
             <select id="builderOptions" name="builder" onchange="adjustForm(customenv_source);" required class="form-control"></select>
-            <br>
         </div>
     </div>
 
-    <div id="network_config" style="margin-bottom: 30px;">
+    <div id="network_config" class="mb-4">
         <h2>Network</h2>
 
         <div id="tnSection" class="form-check">
@@ -856,34 +851,31 @@
     <div id="resources_config">
         <h2 for="session-resources">Session resources</h2>
 
-        <div id="coresSection">
+        <div id="coresSection" class="mb-3">
                 <label for="coresOptions">CPU <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('coresDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="coresDetails">
                     <span class='nb'>Number of CPU cores to associate to the container.</span>
                 </div>
             </label>
             <select id="coresOptions" name="cores" required class="form-control"></select>
-            <br>
         </div>
 
-        <div id="memorySection">
+        <div id="memorySection" class="mb-3">
             <label for="memoryOptions">Memory <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('memoryDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="memoryDetails">
                     <span class='nb'>Amount of memory allocated to the container.</span>
                 </div>
             </label>
             <select id="memoryOptions" name="memory" required class="form-control"></select>
-            <br>
         </div>
 
-        <div id="gpuSection">
+        <div id="gpuSection" class="mb-4">
             <label for="gpuOptions">GPU <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('gpuDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="gpuDetails">
                     <span class='nb'>GPU model or flavour to attach to the container.</span>
                 </div>
             </label>
             <select id="gpuOptions" name="gpu" required class="form-control"></select>
-            <br>
         </div>
     </div>
 
@@ -891,55 +883,55 @@
     <div id="external_res_config">
         <h2>External computing resources</h2>
         
-        <div id="clusterSection">
+        <div id="clusterSection" class="mb-3">
             <label for="clustersOptions">Spark cluster <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('clustersDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="clustersDetails">
                     <span class='nb'>Name of the Spark cluster to connect to from notebooks. See the <a target="_blank" href="https://hadoop-user-guide.web.cern.ch/">Hadoop User guide</a> and the <a target="_blank" href="https://sparktraining.web.cern.ch/">Spark training course</a></span>
                 </div>
             </label>
             <select id="clustersOptions" name="clusters" required class="form-control"></select>
-            <br>
         </div>
 
-        <div id="condorSection">
+        <div id="condorSection" class="mb-3">
             <label for="condorOptions">HTCondor pool <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('condorDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="condorDetails">
                     <span class='nb'>Name of the HTCondor pool to use.</span>
                 </div>
             </label>
             <select id="condorOptions" name="condor" required class="form-control"></select>
-            <br>
         </div>
     </div>
 
     <!-- Extra Options -->
-    <div id="extra_options_config">
+    <div id="extra_options_config" class="mt-4">
         <!-- Toggle Extra Options Section -->
         <h2 role="button" onclick="toggleExtraOptions();" style="display: flex; align-items: center; text-decoration: none;"><span id="extra_options">‣</span>Extra options</h2>
 
         <!-- Rucio Data Management -->
         <div id="rucioSection" style="display: none;">
-            <label for="rucioOptions">Rucio Instance <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('rucioDetails');"><span class='nbs'>more...</span></button>
-                <div style="display:none;" id="rucioDetails">
-                    <span class='nb'>Name of the Rucio instance to connect to from notebooks.</span>
-                </div>
-            </label>
-            <select id="rucioOptions" name="rucio" class="form-control" onchange="updateRseOptions()"></select>
-            <br>
-            <label for="rseOptions">Rucio RSE <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('rucioRSEDetails');"><span class='nbs'>more...</span></button>
-                <div style="display:none;" id="rucioRSEDetails">
-                    <span class='nb'>Rucio Storage Element to mount in the session.</span>
-                </div>
-            </label>
-            <select id="rseOptions" name="rucioRSE" class="form-control"></select>
-            <!-- Inputs used for filling the selectors according to the choosen rucioOption -->
-            <input type="hidden" id="rseMountPathInput" name="rse_mount_path" class="form-control">
-            <input type="hidden" id="pathBeginsAtInput" name="path_begins_at" class="form-control">
-            <br>
+            <div class="mb-3">
+                <label for="rucioOptions">Rucio Instance <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('rucioDetails');"><span class='nbs'>more...</span></button>
+                    <div style="display:none;" id="rucioDetails">
+                        <span class='nb'>Name of the Rucio instance to connect to from notebooks.</span>
+                    </div>
+                </label>
+                <select id="rucioOptions" name="rucio" class="form-control" onchange="updateRseOptions()"></select>
+            </div>
+            <div class="mb-3">
+                <label for="rseOptions">Rucio RSE <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('rucioRSEDetails');"><span class='nbs'>more...</span></button>
+                    <div style="display:none;" id="rucioRSEDetails">
+                        <span class='nb'>Rucio Storage Element to mount in the session.</span>
+                    </div>
+                </label>
+                <select id="rseOptions" name="rucioRSE" class="form-control"></select>
+                <!-- Inputs used for filling the selectors according to the choosen rucioOption -->
+                <input type="hidden" id="rseMountPathInput" name="rse_mount_path" class="form-control">
+                <input type="hidden" id="pathBeginsAtInput" name="path_begins_at" class="form-control">
+            </div>
         </div>
 
         <!-- File path information text -->
-        <div id="fileSection" style="display: none;">
+        <div id="fileSection" class="mb-4" style="display: none;">
             <label for="fileOption">File path <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('fileDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="fileDetails">
                     <span id="lcg-details" class='nb'>Path of the file to be opened after the session is launched, relative to CERNBOX_HOME.</span>
@@ -948,6 +940,5 @@
             </label>
             <input type="text" id="fileOption" name="file" class="form-control">
         </div>
-        <br>
     </div>
 </div>
