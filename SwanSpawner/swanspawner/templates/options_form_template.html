@@ -392,13 +392,6 @@
      * Initialize the form populating the main dropdown (lcg stack/builder) and loading its options
      */
     function initializeForm() {
-        // Set proper header for the whole form based on config
-        const options_header = document.getElementById('optionsHeader');
-        const header = form_config['header'];
-        if (header) {
-            options_header.innerHTML = header;
-        }
-
         // Loop through all source types and populate the main dropdown options (lcg -> lcg_release, customenv -> builder)
         for (const [source, source_data] of Object.entries(source_config)) {
             let first_form_optionselected = false;
@@ -716,13 +709,6 @@
     window.onload = toggleForm;
 </script>
 <div>
-    <label for="placeholder">
-    <span class='nb' id="optionsHeader">Specify the configuration parameters for the SWAN container that will be created for you.</span>
-    </label>
-    <div class="alert alert-warning" role="alert">
-        Try out our new experimental interface based on <b>JupyterLab</b> and let us know your feedback!
-    </div>
-
     <div id="clipboard_config" onclick="copyToClipboard()">
         <i class="fa fa-clipboard"></i>
         <span id="tooltip">Generate URL</span>
@@ -736,19 +722,18 @@
         <div style="display:none;" id="userInterfaceDetails">
             <span class='nb'>JupyterLab is the latest web-based interactive development environment for notebooks, code and data. More information <a target="_blank" href="https://jupyterlab.readthedocs.io/en/stable/user/interface.html">here</a>.</span>
         </div>
-        <div style="display: flex; align-items: center">
+        <div class="alert alert-warning" style="display: flex; align-items: center">
             <input
                 id="use-jupyterlab"
                 type="checkbox"
                 name="use-jupyterlab"
                 value="checked"
+                class="form-control"
                 style="display: inline; width: initial; margin: 0 8px 0 0"
                 onchange="adjustPlatforms(true);"
             />
-            <span> Try the new JupyterLab interface (experimental)</span>
-            <br>
+            <span>Try the new JupyterLab interface (experimental)</span>
         </div>
-        <br>
 
         <div id="software_source_selection">
             <label>Source <a href="#" onclick="toggleVisibility('sourceDetails');"><span class='nbs'>more...</span></a>
@@ -758,9 +743,9 @@
             </label>
             <br>
 
-            <input type="radio" id="use-lcg" name="software_source" value="lcg" checked onchange="toggleForm();" style="width: auto; height: auto; display: inline-block;">
+            <input type="radio" id="use-lcg" name="software_source" value="lcg" checked onchange="toggleForm();" class="form-control" style="width: auto; height: auto; display: inline-block;">
             <label for="use-lcg" style="margin-right: 5%;">LCG</label>
-            <input type="radio" id="use-customenv" name="software_source" value="customenv" onchange="toggleForm();" style="width: auto; height: auto; display: inline-block;">
+            <input type="radio" id="use-customenv" name="software_source" value="customenv" onchange="toggleForm();" class="form-control" style="width: auto; height: auto; display: inline-block;">
             <label for="use-customenv">Custom Environment</label>
             <br><br>
         </div>
@@ -776,13 +761,14 @@
                     <span class='nb'>Additionally, it is possible to use Python packages installed by the user on CERNBox. More information <a target="_blank" href="https://swan.docs.cern.ch/advanced/install_packages/">here</a>.</span>
                 </div>
             </label>
-            <select id="lcgOptions" name="lcg" onchange="adjustForm(lcg_source);" required></select>
+            <select id="lcgOptions" name="lcg" onchange="adjustForm(lcg_source);" required class="form-control"></select>
             <div style="display: flex; align-items: center">
                 <input
                   id="use-local-packages"
                   type="checkbox"
                   name="use-local-packages"
                   value="checked"
+                  class="form-control"
                   style="display: inline; width: initial; margin: 0 8px 0 0"
                   onchange="adjustPlatforms(true);"
                 />
@@ -797,8 +783,8 @@
                     <span class='nb'>The combination of compiler version and flags.</span>
                 </div>
             </label>
-            <select id="platformsOptions" name="platforms" onchange="adjustOptions();" required></select>
-            <input type="hidden" id="hiddenPlatformsOptions" name="platforms">
+            <select id="platformsOptions" name="platforms" onchange="adjustOptions();" required class="form-control"></select>
+            <input type="hidden" id="hiddenPlatformsOptions" name="platforms" class="form-control">
             <br>
         </div>
 
@@ -808,7 +794,7 @@
                     <span class='nb'>User-provided bash script to define custom environment variables. The variable CERNBOX_HOME is resolved to the proper /eos/user/u/username directory.</span>
                 </div>
             </label>
-            <input type="text" id="scriptenvOption" name="scriptenv" placeholder="e.g. $CERNBOX_HOME/MySWAN/myscript.sh">
+            <input type="text" id="scriptenvOption" name="scriptenv" placeholder="e.g. $CERNBOX_HOME/MySWAN/myscript.sh" class="form-control">
             <br>
         </div>
     </div>
@@ -830,6 +816,7 @@
                     name="repository"
                     placeholder="e.g. https://gitlab.cern.ch/user/myrepo"
                     oninput="validateRepositoryInput(this);"
+                    class="form-control"
                 />
             </div>
             <br>
@@ -841,7 +828,7 @@
                     <span class='nb'>Acc-Py release to build the custom environment.</a></span>
                 </div>
             </label>
-            <select id="builderOptions" name="builder" onchange="adjustForm(customenv_source);" required></select>
+            <select id="builderOptions" name="builder" onchange="adjustForm(customenv_source);" required class="form-control"></select>
             <br>
         </div>
     </div>
@@ -850,7 +837,7 @@
         <h2>Network</h2>
 
         <div id="tnSection">
-            <input type="checkbox" id="use-tn" name="use-tn" onchange="accessTN(this.checked);" style="width: auto; height: auto; display: inline-block;">
+            <input type="checkbox" id="use-tn" name="use-tn" onchange="accessTN(this.checked);" class="form-control" style="width: auto; height: auto; display: inline-block;">
             <label style="width: auto; height: auto; display: inline-block;" for="use-tn">TN Access</label>
             <a href="#" onclick="toggleVisibility('use-tnDetails');"><span class='nbs'>more...</span></a>
             <div style="display:none;" id="use-tnDetails">
@@ -869,7 +856,7 @@
                     <span class='nb'>Number of CPU cores to associate to the container.</span>
                 </div>
             </label>
-            <select id="coresOptions" name="cores" required></select>
+            <select id="coresOptions" name="cores" required class="form-control"></select>
             <br>
         </div>
 
@@ -879,7 +866,7 @@
                     <span class='nb'>Amount of memory allocated to the container.</span>
                 </div>
             </label>
-            <select id="memoryOptions" name="memory" required></select>
+            <select id="memoryOptions" name="memory" required class="form-control"></select>
             <br>
         </div>
 
@@ -889,7 +876,7 @@
                     <span class='nb'>GPU model or flavour to attach to the container.</span>
                 </div>
             </label>
-            <select id="gpuOptions" name="gpu" required></select>
+            <select id="gpuOptions" name="gpu" required class="form-control"></select>
             <br>
         </div>
     </div>
@@ -904,7 +891,7 @@
                     <span class='nb'>Name of the Spark cluster to connect to from notebooks. See the <a target="_blank" href="https://hadoop-user-guide.web.cern.ch/">Hadoop User guide</a> and the <a target="_blank" href="https://sparktraining.web.cern.ch/">Spark training course</a></span>
                 </div>
             </label>
-            <select id="clustersOptions" name="clusters" required></select>
+            <select id="clustersOptions" name="clusters" required class="form-control"></select>
             <br>
         </div>
 
@@ -914,7 +901,7 @@
                     <span class='nb'>Name of the HTCondor pool to use.</span>
                 </div>
             </label>
-            <select id="condorOptions" name="condor" required></select>
+            <select id="condorOptions" name="condor" required class="form-control"></select>
             <br>
         </div>
     </div>
@@ -931,17 +918,17 @@
                     <span class='nb'>Name of the Rucio instance to connect to from notebooks.</span>
                 </div>
             </label>
-            <select id="rucioOptions" name="rucio" onchange="updateRseOptions()"></select>
+            <select id="rucioOptions" name="rucio" class="form-control" onchange="updateRseOptions()"></select>
             <br>
             <label for="rseOptions">Rucio RSE <a href="#" onclick="toggleVisibility('rucioRSEDetails');"><span class='nbs'>more...</span></a>
                 <div style="display:none;" id="rucioRSEDetails">
                     <span class='nb'>Rucio Storage Element to mount in the session.</span>
                 </div>
             </label>
-            <select id="rseOptions" name="rucioRSE"></select>
+            <select id="rseOptions" name="rucioRSE" class="form-control"></select>
             <!-- Inputs used for filling the selectors according to the choosen rucioOption -->
-            <input type="hidden" id="rseMountPathInput" name="rse_mount_path">
-            <input type="hidden" id="pathBeginsAtInput" name="path_begins_at">
+            <input type="hidden" id="rseMountPathInput" name="rse_mount_path" class="form-control">
+            <input type="hidden" id="pathBeginsAtInput" name="path_begins_at" class="form-control">
             <br>
         </div>
 
@@ -953,7 +940,7 @@
                     <span id="customenv-details" class='nb'>Path of the file to be opened after the session is launched, relative to the root of the git repository.</span>
                 </div>
             </label>
-            <input type="text" id="fileOption" name="file">
+            <input type="text" id="fileOption" name="file" class="form-control">
         </div>
         <br>
     </div>

@@ -4,129 +4,76 @@
 {% endif %}
 
 {% block main %}
-
-
-<div class="container">
+{# TODO: Remove this #}
+{% set error_message = "Something went wrong" %}
+<main class="container-sm mb-5" style="max-width: 600px;">
   <div class="row">
-    <div class="swan-info">
-      <div id="swan-loader">
-        <div class="loader-circle">
-          <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}">
+    <form enctype="multipart/form-data" id="spawn_form" action="{{ url | safe }}" method="post" role="form">
+      {% if error_message %}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+          {{error_message | safe}}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div class="loader-line-mask">
-          <div class="loader-line"></div>
+      {% endif %}
+      <h1>Configure your session</h1>
+      <div>
+        <div id="spawner-options">
+          {{spawner_options_form | safe}}
         </div>
-        <span class="text"></span>
+        <div class="w-100 text-center">
+          {% if save_config %}<div class="keep-config">
+            <input type="checkbox" id="keep-config" name="keep-config" class="keep-config-checkbox"><label
+              for="keep-config">Always start with this configuration</label>
+          </div>{% endif %}
+          <button type="submit" id="spawn" class="btn btn-default btn-primary btn-lg w-100">
+            <span id="submit-spinner" class="d-none">
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+              <span role="status">Starting your session...</span>
+            </span>
+            <span id="submit-text">
+              <i class="fa fa-rocket me-1"></i>
+              Start new session
+            </span>
+          </button>
+        </div>
       </div>
-    </div>
+    </form>
   </div>
-</div>
-
-<div id="configuration-modal" class="modal fade" role="dialog">
-  <form enctype="multipart/form-data" id="spawn_form" action="{{ url | safe }}" method="post" role="form">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Configure Environment</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          {% if error_message %}
-          <div class="alert alert-dismissable alert-danger">
-            <button class="close" type="button" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-            <p>{{error_message | safe}}</p>
-          </div>
-          {% endif %}
-          <div id="spawner-options">
-            {{spawner_options_form | safe}}
-          </div>
-        </div>
-        <div class="modal-footer">
-          <div class="w-100">
-            {% if save_config %}<div class="keep-config">
-              <input type="checkbox" id="keep-config" name="keep-config" class="keep-config-checkbox"><label
-                for="keep-config"> Always start with this configuration</label>
-            </div>{% endif %}
-            <input type="submit" id="spawn" value="Start my Session" class="btn btn-default btn-primary w-100">
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-</div>
-
+</main>
 {% endblock %}
 
 {% block script %}
 <script type="text/javascript">
+  /*
+  * This function keeps the "use-tn" checkbox in sync, whether the cluster is exposed to the TN or not.
+  */
+  function updateUseTnCheckbox() {
+    const tnCheckbox = document.getElementById('use-tn');
+    if (tnCheckbox) tnCheckbox.checked = '{{ tn_enabled }}' === 'True';
+    else console.warn("'use-tn' is not defined, cannot set use-tn checkbox");
+  }
 
-  require(['jquery'], function ($) {
-    $('#swan-loader .loader-line-mask').hide();
-    $("#spawner-options").find("input, select, textarea, button").addClass("form-control");
-    const loader = $('#swan-loader .loader-line-mask');
-    const message = $('#swan-loader .text');
-    let starting = false;
+  const spawnBtn = document.getElementById('spawn');
+  const spawnForm = document.getElementById('spawn_form');
+  const submitText = document.getElementById('submit-text');
+  const submitSpinner = document.getElementById('submit-spinner');
 
-    const modalElem = document.getElementById('configuration-modal');
-    const modal = new bootstrap.Modal(modalElem, {
-      backdrop: 'static',
-      keyboard: false
-    });
+  spawnBtn.addEventListener('click', (e) => {
+    // TODO: Remove the preventDefault
+    e.preventDefault();
+    const form = document.getElementById('spawn_form');
 
-    /*
-    * This function keeps the "use-tn" checkbox in sync, whether the cluster is exposed to the TN or not.
-    */
-    function updateUseTnCheckbox() {
-      const tnCheckbox = document.getElementById('use-tn');
-      if (tnCheckbox) tnCheckbox.checked = '{{ tn_enabled }}' === 'True';
-      else console.warn("'use-tn' is not defined, cannot set use-tn checkbox");
+    if (form.checkValidity()) {
+      spawnForm.querySelectorAll('input, select').forEach(elem => {
+        elem.setAttribute('disabled', 'disabled');
+      });
+      spawnBtn.setAttribute('disabled', 'disabled');
+      submitText.classList.add('d-none');
+      submitSpinner.classList.remove('d-none');
     }
-
-    $('#spawn').on('click', function (e) {
-      const form = document.getElementById('spawn_form');
-
-      // If form is valid, continue with modal hide
-      if (form.checkValidity()) { 
-        starting = true;
-        modal.hide();
-      }
-    });
-
-    modalElem.addEventListener('shown.bs.modal', function () {
-      updateUseTnCheckbox();
-    });
-
-    modalElem.addEventListener('hidden.bs.modal', function () {
-      if (starting) {
-        loader.show()
-        message.text("Starting your session");
-      } else {
-        var a = $('<a>')
-                  .text("Open configuration menu")
-                  .attr('href', 'javascript:')
-                  .on('click', function(){
-                    message.hide();
-                    modal.show();
-                  });
-
-        var p = $('<p>')
-                  .addClass('extra')
-                  .append(a)
-
-        message.html(p);
-      }
-      message.show();
-    });
-
-    // This runs when user comes back via browser history (e.g. Back button)
-    window.onpageshow = function(event) {
-      updateUseTnCheckbox();
-    };
-
-    modal.show();
   });
 
+  // This runs when user comes back via browser history (e.g. Back button)
+  window.onpageshow = () => updateUseTnCheckbox();
 </script>
 {% endblock %}

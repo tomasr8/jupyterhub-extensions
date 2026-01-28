@@ -104,7 +104,7 @@
       </div>
     </div>
 
-    {# Loading Modal #}
+    {# Loading Spinner #}
     <div id="swan-loader" class="d-none flex-column align-items-center justify-content-center gap-3 py-5 animate">
       <div class="loader-ring">
         <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}" alt="SWAN logo">
@@ -147,7 +147,7 @@
 
       api.stop_server(user, {
         success: () => {
-          {# window.location.replace(`{{base_url}}spawn?${urlParams}`); #}
+          window.location.replace(`{{base_url}}spawn?${urlParams}`);
         },
         error: () => {
           // Show the error message and stop the loading animation
