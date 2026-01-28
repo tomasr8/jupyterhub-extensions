@@ -718,52 +718,57 @@
     <div id="software_sourceSection">
         <h2>Software</h2>
 
-        <label> User Interface <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('userInterfaceDetails');"><span class='nbs'>more...</span></button></label>
-        <div style="display:none;" id="userInterfaceDetails">
-            <span class='nb'>JupyterLab is the latest web-based interactive development environment for notebooks, code and data. More information <a target="_blank" href="https://jupyterlab.readthedocs.io/en/stable/user/interface.html">here</a>.</span>
-        </div>
-        <div class="alert alert-warning">
-            <input
-                id="use-jupyterlab"
-                type="checkbox"
-                name="use-jupyterlab"
-                value="checked"
-                class="form-check-input me-1"
-                onchange="adjustPlatforms(true);"
-            />
-            <label for="use-jupyterlab" class="form-check-label">
-                Try the new JupyterLab interface (experimental)
-            </label>
+        <div class="mb-3">
+            <label>User Interface<button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('userInterfaceDetails');"><span class='nbs'>more...</span></button></label>
+            <div style="display:none;" id="userInterfaceDetails">
+                <span class='nb'>JupyterLab is the latest web-based interactive development environment for notebooks, code and data. More information <a target="_blank" href="https://jupyterlab.readthedocs.io/en/stable/user/interface.html">here</a>.</span>
+            </div>
+            <div class="alert alert-warning">
+                <input
+                    id="use-jupyterlab"
+                    type="checkbox"
+                    name="use-jupyterlab"
+                    value="checked"
+                    class="form-check-input me-1"
+                    onchange="adjustPlatforms(true);"
+                />
+                <label for="use-jupyterlab" class="form-check-label">
+                    Try the new JupyterLab interface (experimental)
+                </label>
+            </div>
         </div>
 
-        <div id="software_source_selection">
+        <div id="software_source_selection" class="mb-3">
             <label>Source <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('sourceDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="sourceDetails">
                     <span class='nb'>Software source: curated stack (LCG) or custom environment.</span>
                 </div>
             </label>
-            <br>
-
-            <input type="radio" id="use-lcg" name="software_source" value="lcg" checked onchange="toggleForm();" class="form-control" style="width: auto; height: auto; display: inline-block;">
-            <label for="use-lcg" style="margin-right: 5%;">LCG</label>
-            <input type="radio" id="use-customenv" name="software_source" value="customenv" onchange="toggleForm();" class="form-control" style="width: auto; height: auto; display: inline-block;">
-            <label for="use-customenv">Custom Environment</label>
-            <br><br>
+            <div class="form-check">
+                <input type="radio" id="use-lcg" name="software_source" value="lcg" checked onchange="toggleForm();" class="form-check-input">
+                <label for="use-lcg" class="form-check-label">LCG</label>
+            </div>
+            <div class="form-check">
+                <input type="radio" id="use-customenv" name="software_source" value="customenv" onchange="toggleForm();" class="form-check-input">
+                <label for="use-customenv" class="form-check-label">Custom Environment</label>
+            </div>
         </div>
     </div>
 
     <!-- LCG configuration -->
     <div id="lcg_config">
         <div id="lcgSection">
-            <label for="lcgOptions">Software stack <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('lcgDetails');"><span class='nbs'>more...</span></button>
-                <div style="display:none;" id="lcgDetails">
-                    <span class='nb'>The software stack to associate to the container. See the <a target="_blank" href="http://lcginfo.cern.ch/">LCG package info</a> page.</span>
-                    <br>
-                    <span class='nb'>Additionally, it is possible to use Python packages installed by the user on CERNBox. More information <a target="_blank" href="https://swan.docs.cern.ch/advanced/install_packages/">here</a>.</span>
-                </div>
-            </label>
-            <select id="lcgOptions" name="lcg" onchange="adjustForm(lcg_source);" required class="form-control"></select>
-            <div class="form-check">
+            <div class="mb-3">
+                <label for="lcgOptions">Software stack <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('lcgDetails');"><span class='nbs'>more...</span></button>
+                    <div style="display:none;" id="lcgDetails">
+                        <span class='nb'>The software stack to associate to the container. See the <a target="_blank" href="http://lcginfo.cern.ch/">LCG package info</a> page.</span>
+                        <br>
+                        <span class='nb'>Additionally, it is possible to use Python packages installed by the user on CERNBox. More information <a target="_blank" href="https://swan.docs.cern.ch/advanced/install_packages/">here</a>.</span>
+                    </div>
+                </label>
+                <select id="lcgOptions" name="lcg" onchange="adjustForm(lcg_source);" required class="form-control"></select>
+            </div>
+            <div class="form-check mb-3">
                 <input
                     id="use-local-packages"
                     type="checkbox"
@@ -776,10 +781,9 @@
                     Use Python packages installed on CERNBox
                 </label>
             </div>
-            <br>
         </div>
         
-        <div id="platformSection">
+        <div id="platformSection" class="mb-3">
             <label for="platformsOptions">Platform <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('platformDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="platformDetails">
                     <span class='nb'>The combination of compiler version and flags.</span>
@@ -787,17 +791,15 @@
             </label>
             <select id="platformsOptions" name="platforms" onchange="adjustOptions();" required class="form-control"></select>
             <input type="hidden" id="hiddenPlatformsOptions" name="platforms" class="form-control">
-            <br>
         </div>
 
-        <div id="scriptenvSection">
+        <div id="scriptenvSection" class="mb-3">
             <label for="scriptenvOption">Environment script <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('scriptenvDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="scriptenvDetails">
                     <span class='nb'>User-provided bash script to define custom environment variables. The variable CERNBOX_HOME is resolved to the proper /eos/user/u/username directory.</span>
                 </div>
             </label>
             <input type="text" id="scriptenvOption" name="scriptenv" placeholder="e.g. $CERNBOX_HOME/MySWAN/myscript.sh" class="form-control">
-            <br>
         </div>
     </div>
 
