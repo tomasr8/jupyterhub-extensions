@@ -25,9 +25,6 @@
 {% block script %}
 <script type="text/javascript">
 require(["jquery"], function ($) {
-  $("#refresh").click(function () {
-    window.location.reload();
-  })
   // hook up event-stream for progress
   var evtSource = new EventSource("{{ progress_url }}");
   evtSource.onmessage = function(e) {
