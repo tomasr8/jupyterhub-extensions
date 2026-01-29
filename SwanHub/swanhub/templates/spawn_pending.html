@@ -19,9 +19,9 @@
 {% block script %}
 <script type="text/javascript">
 // hook up event-stream for progress
-var evtSource = new EventSource("{{ progress_url }}");
+const evtSource = new EventSource("{{ progress_url }}");
 evtSource.onmessage = function(e) {
-  var evt = JSON.parse(e.data);
+  const evt = JSON.parse(e.data);
   console.log(evt);
   if (evt.ready) {
     evtSource.close();
