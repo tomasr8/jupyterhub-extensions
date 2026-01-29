@@ -1,12 +1,11 @@
 {% extends "page.html" %}
 
 {% block main %}
-<div class="container" style="max-width: 600px;">
-  <div class="row">
-    <div class="alert alert-warning" role="alert">
-      <p class="text-center">A session is running already. Do you want to stop it or go to it?</p>
-      <hr>
-      <div class="d-flex gap-3 justify-content-center">
+  <div class="container" style="max-width: 600px;">
+    <div class="row text-center">
+      <h1>Session already running</h1>
+      <p>A session is running already. Do you want to stop it or go to it?</p>
+      <div class="d-flex gap-3 justify-content-center mt-3">
         <button id="stop-session" type="button" class="btn btn-danger">
           <i class="fa fa-circle-stop"></i>
           Stop session
@@ -18,8 +17,6 @@
       </div>
     </div>
   </div>
-</div>
-
 {% endblock %}
 
 {% block script %}
