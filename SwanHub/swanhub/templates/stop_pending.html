@@ -22,13 +22,17 @@
 {% block script %}
 {{ super() }}
 <script type="text/javascript">
-require(["jquery"], function ($) {
-  $("#refresh").click(function () {
-    window.location.reload();
-  });
-  setTimeout(function () {
-    window.location.reload();
-  }, 5000);
+
+const refreshBtn = document.getElementById("refresh");
+
+refreshBtn.addEventListener("click", e => {
+  e.preventDefault();
+  window.location.reload();
 });
+
+setTimeout(() => {
+  window.location.reload();
+}, 5000);
+
 </script>
 {% endblock %}
