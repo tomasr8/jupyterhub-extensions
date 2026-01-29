@@ -18,24 +18,22 @@
 
 {% block script %}
 <script type="text/javascript">
-require(["jquery"], function ($) {
-  // hook up event-stream for progress
-  var evtSource = new EventSource("{{ progress_url }}");
-  evtSource.onmessage = function(e) {
-    var evt = JSON.parse(e.data);
-    console.log(evt);
-    if (evt.ready) {
-      evtSource.close();
-      // reload the current page
-      // which should result in a redirect to the running server
-      window.location.reload();
-    }
-    if (evt.failed) {
-      evtSource.close();
-      window.location.replace('{{base_url}}spawn?failed');
-    }
+// hook up event-stream for progress
+var evtSource = new EventSource("{{ progress_url }}");
+evtSource.onmessage = function(e) {
+  var evt = JSON.parse(e.data);
+  console.log(evt);
+  if (evt.ready) {
+    evtSource.close();
+    // reload the current page
+    // which should result in a redirect to the running server
+    window.location.reload();
   }
-});
+  if (evt.failed) {
+    evtSource.close();
+    window.location.replace('{{base_url}}spawn?failed');
+  }
+}
 // signal that page has finished loading (mostly for tests)
 window._jupyterhub_page_loaded = true;
 </script>
