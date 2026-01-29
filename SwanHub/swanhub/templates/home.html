@@ -82,7 +82,7 @@
   </table>
 </div>
 {% else %}
-  <main class="container d-flex align-items-center justify-content-center" style="min-height: 70vh;">
+  <main class="container d-flex align-items-center justify-content-center mb-4" style="min-height: 70vh;">
     <div id="welcome" class="text-center d-none">
       <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}" alt="SWAN Logo" class="mb-3" style="max-width: 150px; height: auto;">
       <h1 class="display-6 fw-light text-primary mb-1">Welcome to SWAN</h1>
@@ -90,16 +90,16 @@
 
       {# Start new session #}
       <a href="{{ base_url }}spawn" class="btn btn-primary btn-lg px-4 mb-5">
-        <i class="fa fa-rocket me-2"></i> Start new session
+        <i class="fa fa-rocket me-2"></i>Start new session
       </a>
 
       {# Help links #}
       <div class="d-flex justify-content-center gap-3">
         <a href="https://swan.docs.cern.ch/" class="btn btn-sm btn-outline-secondary">
-          <i class="fa fa-book me-1"></i> Documentation
+          <i class="fa fa-book me-1"></i>Documentation
         </a>
         <a href="https://swan-gallery.web.cern.ch/" class="btn btn-sm btn-outline-secondary">
-          <i class="fa fa-th me-1"></i> Examples
+          <i class="fa fa-th me-1"></i>Examples
         </a>
       </div>
     </div>
