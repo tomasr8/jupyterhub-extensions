@@ -65,7 +65,10 @@ def watch_for_changes():
     existing_paths = [p for p in existing_paths if p.exists()]
 
     # style.css is a generated file, ignore changes to it
-    ignore_filter = DefaultFilter(ignore_paths=[REPO_ROOT / "SwanHub/swanhub/static/css/style.css"])
+    ignore_filter = DefaultFilter(ignore_paths=[
+        REPO_ROOT / "SwanHub/swanhub/static/css/style.css",
+        REPO_ROOT / "SwanHub/swanhub/static/css/style_legacy.css",
+    ])
 
     click.secho("Watching for changes...", fg="green")
     for _ in watch(*existing_paths, watch_filter=ignore_filter):
