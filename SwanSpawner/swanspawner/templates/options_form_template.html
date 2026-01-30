@@ -766,7 +766,7 @@
                         <span class='nb'>Additionally, it is possible to use Python packages installed by the user on CERNBox. More information <a target="_blank" href="https://swan.docs.cern.ch/advanced/install_packages/">here</a>.</span>
                     </div>
                 </label>
-                <select id="lcgOptions" name="lcg" onchange="adjustForm(lcg_source);" required class="form-control"></select>
+                <select id="lcgOptions" name="lcg" onchange="adjustForm(lcg_source);" required class="form-select"></select>
             </div>
             <div class="form-check mb-3">
                 <input
@@ -789,7 +789,7 @@
                     <span class='nb'>The combination of compiler version and flags.</span>
                 </div>
             </label>
-            <select id="platformsOptions" name="platforms" onchange="adjustOptions();" required class="form-control"></select>
+            <select id="platformsOptions" name="platforms" onchange="adjustOptions();" required class="form-select"></select>
             <input type="hidden" id="hiddenPlatformsOptions" name="platforms" class="form-control">
         </div>
 
@@ -828,7 +828,7 @@
                     <span class='nb'>Acc-Py release to build the custom environment.</a></span>
                 </div>
             </label>
-            <select id="builderOptions" name="builder" onchange="adjustForm(customenv_source);" required class="form-control"></select>
+            <select id="builderOptions" name="builder" onchange="adjustForm(customenv_source);" required class="form-select"></select>
         </div>
     </div>
 
@@ -857,7 +857,7 @@
                     <span class='nb'>Number of CPU cores to associate to the container.</span>
                 </div>
             </label>
-            <select id="coresOptions" name="cores" required class="form-control"></select>
+            <select id="coresOptions" name="cores" required class="form-select"></select>
         </div>
 
         <div id="memorySection" class="mb-3">
@@ -866,7 +866,7 @@
                     <span class='nb'>Amount of memory allocated to the container.</span>
                 </div>
             </label>
-            <select id="memoryOptions" name="memory" required class="form-control"></select>
+            <select id="memoryOptions" name="memory" required class="form-select"></select>
         </div>
 
         <div id="gpuSection" class="mb-4">
@@ -875,7 +875,7 @@
                     <span class='nb'>GPU model or flavour to attach to the container.</span>
                 </div>
             </label>
-            <select id="gpuOptions" name="gpu" required class="form-control"></select>
+            <select id="gpuOptions" name="gpu" required class="form-select"></select>
         </div>
     </div>
 
@@ -889,7 +889,7 @@
                     <span class='nb'>Name of the Spark cluster to connect to from notebooks. See the <a target="_blank" href="https://hadoop-user-guide.web.cern.ch/">Hadoop User guide</a> and the <a target="_blank" href="https://sparktraining.web.cern.ch/">Spark training course</a></span>
                 </div>
             </label>
-            <select id="clustersOptions" name="clusters" required class="form-control"></select>
+            <select id="clustersOptions" name="clusters" required class="form-select"></select>
         </div>
 
         <div id="condorSection" class="mb-3">
@@ -898,7 +898,7 @@
                     <span class='nb'>Name of the HTCondor pool to use.</span>
                 </div>
             </label>
-            <select id="condorOptions" name="condor" required class="form-control"></select>
+            <select id="condorOptions" name="condor" required class="form-select"></select>
         </div>
     </div>
 
@@ -915,7 +915,7 @@
                         <span class='nb'>Name of the Rucio instance to connect to from notebooks.</span>
                     </div>
                 </label>
-                <select id="rucioOptions" name="rucio" class="form-control" onchange="updateRseOptions()"></select>
+                <select id="rucioOptions" name="rucio" class="form-select" onchange="updateRseOptions()"></select>
             </div>
             <div class="mb-3">
                 <label for="rseOptions">Rucio RSE <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('rucioRSEDetails');"><span class='nbs'>more...</span></button>
@@ -923,7 +923,7 @@
                         <span class='nb'>Rucio Storage Element to mount in the session.</span>
                     </div>
                 </label>
-                <select id="rseOptions" name="rucioRSE" class="form-control"></select>
+                <select id="rseOptions" name="rucioRSE" class="form-select"></select>
                 <!-- Inputs used for filling the selectors according to the choosen rucioOption -->
                 <input type="hidden" id="rseMountPathInput" name="rse_mount_path" class="form-control">
                 <input type="hidden" id="pathBeginsAtInput" name="path_begins_at" class="form-control">
