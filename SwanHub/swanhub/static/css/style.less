@@ -41,6 +41,15 @@ footer {
     }
 }
 
+// Improve color contrast of outline buttons in dark mode
+[data-bs-theme="dark"] .btn-outline-secondary {
+    color: var(--bs-secondary-color);
+
+    &:hover {
+        color: var(--bs-secondary-hover-color);
+    }
+}
+
 // Invert CERN logo in light mode
 [data-bs-theme="light"] footer img {
     filter: invert(1);

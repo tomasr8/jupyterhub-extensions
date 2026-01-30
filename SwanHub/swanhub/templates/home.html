@@ -86,7 +86,7 @@
     <div id="welcome" class="text-center d-none">
       <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}" alt="SWAN Logo" class="mb-3" style="max-width: 150px; height: auto;">
       <h1 class="display-6 fw-light text-primary mb-1">Welcome to SWAN</h1>
-      <h2 class="text-body-secondary mb-4">Your gateway to interactive analysis</h2>
+      <p class="lead text-body-secondary mb-4">Your gateway to interactive analysis</p>
 
       {# Start new session #}
       <a href="{{ base_url }}spawn" class="btn btn-primary btn-lg px-4 mb-5">
@@ -95,10 +95,10 @@
 
       {# Help links #}
       <div class="d-flex justify-content-center gap-3">
-        <a href="https://swan.docs.cern.ch/" class="btn btn-sm btn-outline-secondary">
+        <a href="https://swan.docs.cern.ch/" class="btn btn-outline-secondary">
           <i class="fa fa-book me-1"></i>Documentation
         </a>
-        <a href="https://swan-gallery.web.cern.ch/" class="btn btn-sm btn-outline-secondary">
+        <a href="https://swan-gallery.web.cern.ch/" class="btn btn-outline-secondary">
           <i class="fa fa-th me-1"></i>Examples
         </a>
       </div>
