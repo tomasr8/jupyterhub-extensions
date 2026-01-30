@@ -30,76 +30,8 @@ body {
     flex-direction: column;
 }
 
-a,
-a:active,
-a:focus {
-    text-decoration: none;
-}
-
-.h-mixin {
-    // same as the .text-primary bootstrap class
-    color: rgb(var(--bs-primary-rgb));
-    font-family: @font_family_1;
-
-    a:hover {
-        text-decoration: none;
-    }
-}
-
-.h1-mixin {
-    .h-mixin();
-    font-weight: 400;
-    font-size: @size-1;
-}
-
-h1 {
-    .h1-mixin();
-
-    i {
-        line-height: @size-1;
-
-        &:before {
-            font-size: @size-1 / 2 !important;
-            margin-left: 10px;
-            vertical-align: middle !important;
-        }
-    }
-}
-
-.h2() {
-    .h-mixin();
-    font-weight: 300;
-    font-size: @size-2;
-
-    i {
-        line-height: @size-2;
-
-        &:before {
-            font-size: @size-2 / 2 !important;
-            margin-left: 10px;
-            vertical-align: middle !important;
-        }
-    }
-}
-
-h2 {
-    .h2();
-}
-
-h3 {
-    .h-mixin();
-    font-weight: 300;
-    font-size: @size-4;
-    margin-top: 0;
-}
-
-h4 {
-    font-weight: bold;
-    font-size: @size-5;
-}
-
 footer {
-    // Fix footer to bottom of the page
+    // Fix footer to the bottom of the page
     margin-top: auto;
     // Match header background
     background-color: rgb(var(--bs-tertiary-bg-rgb));
