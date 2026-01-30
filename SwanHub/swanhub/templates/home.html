@@ -83,7 +83,7 @@
 </div>
 {% else %}
   <main class="container d-flex align-items-center justify-content-center mb-4" style="min-height: 60vh;">
-    <div id="welcome" class="text-center d-none">
+    <div id="welcome" class="hidden text-center">
       <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}" alt="SWAN Logo" class="mb-3" style="max-width: 150px; height: auto;">
       <h1 class="display-6 fw-light text-primary mb-1">Welcome to SWAN</h1>
       <p class="lead text-body-secondary mb-4">Your gateway to interactive analysis</p>
@@ -105,14 +105,15 @@
     </div>
 
     {# Loading Spinner #}
-    <div id="swan-loader" class="d-none flex-column align-items-center justify-content-center gap-3 py-5 animate">
+    <div id="swan-loader" class="d-none flex-column align-items-center justify-content-center gap-3 py-5">
       <div class="loader-ring">
         <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}" alt="SWAN logo">
       </div>
-      <span class="loader-text text-body-secondary">Shutting down your session...</span>
-      {# Error alert, shown when the API request fails #}
-      <div class="error-text alert alert-danger" role="alert">
-        There was an error shutting down your session. Try again later.
+      <div>
+        <h4 id="shutting-down" class="text-body-secondary">Shutting down your session...</h4>
+        <h4 id="shutdown-failed" class="hidden text-danger">
+          There was an error shutting down your session. Try again later.
+        </h4>
       </div>
     </div>
   </main>
@@ -133,7 +134,8 @@
     const urlParams = new URLSearchParams(window.location.search);
     const welcome = document.getElementById('welcome');
     const loader = document.getElementById('swan-loader');
-    const error = document.getElementById('error');
+    const shuttingDownMsg = document.getElementById('shutting-down');
+    const shutdownFailedMsg = document.getElementById('shutdown-failed');
 
     if (urlParams.has('changeconfig')) {
       urlParams.delete('changeconfig');
@@ -152,11 +154,12 @@
         error: () => {
           // Show the error message and stop the loading animation
           loader.classList.add('error');
-          loader.classList.remove('animate');
+          shuttingDownMsg.classList.add('hidden');
+          shutdownFailedMsg.classList.remove('hidden');
         }
       });
     } else {
-      welcome.classList.remove('d-none');
+      welcome.classList.remove('hidden');
     }
   });
 </script>

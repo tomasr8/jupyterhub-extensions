@@ -88,7 +88,7 @@ footer {
         }
     }
 
-    &.animate .loader-ring::before {
+    &:not(.error) .loader-ring::before {
         content: '';
         position: absolute;
         inset: 0;
@@ -106,22 +106,8 @@ footer {
         border: var(--ring-width) solid color-mix(in srgb, var(--ring-color) 15%, transparent);
     }
 
-    .error-text {
-        display: none;
-    }
-
-    &.error {
-        .loader-text {
-            display: none;
-        }
-
-        .error-text {
-            display: block;
-        }
-    }
-
-    .loader-text:empty {
-        display: none;
+    &.error .loader-ring::after {
+        border-color: var(--bs-danger);
     }
 
     @keyframes spin {
