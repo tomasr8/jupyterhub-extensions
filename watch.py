@@ -56,6 +56,27 @@ def create_symlinks():
             path.symlink_to(target, target_is_directory=True)
 
 
+def recompile_package(pkg_path: Path):
+    """
+    Recompile the package at the given path by running `npm run build`.
+    """
+    subprocess.run(
+        ["npm", "run", "build"], cwd=pkg_path,
+        check=False  # Don't raise error on failure
+    )
+
+
+def recompile_packages():
+    """
+    Recompile all packages that have a package.json file.
+    """
+    click.secho("Rebuilding packages...", fg="yellow")
+    for pkg in packages:
+        package_json = (REPO_ROOT / pkg / "../package.json").resolve()
+        if package_json.exists():
+            recompile_package(REPO_ROOT / pkg)
+
+
 def watch_for_changes():
     """
     Watch for file changes in the package static directories and automatically
@@ -72,15 +93,11 @@ def watch_for_changes():
 
     click.secho("Watching for changes...", fg="green")
     for _ in watch(*existing_paths, watch_filter=ignore_filter):
-        click.secho("Changes detected, rebuilding packages...", fg="yellow")
-        for pkg in packages:
-            package_json = (REPO_ROOT / pkg / "../package.json").resolve()
-            if package_json.exists():
-                subprocess.run(
-                    ["npm", "run", "build"], cwd=REPO_ROOT / pkg, check=True
-                )
+        click.secho("Changes detected", fg="yellow")
+        recompile_packages()
         click.secho("Watching for changes...", fg="green")
 
 
 create_symlinks()
+recompile_packages()
 watch_for_changes()
