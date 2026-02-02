@@ -286,7 +286,11 @@
 
         const isValid = httpPattern.test(repo_input.value) || sshPattern.test(repo_input.value);
 
-        repo_input.style.backgroundColor = repo_input.value && !isValid ? '#ffcccc' : '#ffffff';
+        if (!isValid) {
+            repo_input.classList.add('is-invalid');
+        } else {
+            repo_input.classList.remove('is-invalid');
+        }
     }
 
     /**
@@ -819,7 +823,11 @@
                 placeholder="e.g. https://gitlab.cern.ch/user/myrepo"
                 oninput="validateRepositoryInput(this);"
                 class="form-control"
+                required
             />
+            <div class="invalid-feedback">
+                The repository URL is not valid.
+            </div>
         </div>
 
         <div id="builderSection" class="mb-3">
