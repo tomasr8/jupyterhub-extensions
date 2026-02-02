@@ -57,9 +57,6 @@ def create_symlinks():
 
 
 def recompile_package(pkg_path: Path):
-    """
-    Recompile the package at the given path by running `npm run build`.
-    """
     subprocess.run(
         ["npm", "run", "build"], cwd=pkg_path,
         check=False  # Don't raise error on failure
@@ -67,9 +64,6 @@ def recompile_package(pkg_path: Path):
 
 
 def recompile_packages():
-    """
-    Recompile all packages that have a package.json file.
-    """
     click.secho("Rebuilding packages...", fg="yellow")
     for pkg in packages:
         package_json = (REPO_ROOT / pkg / "../package.json").resolve()
