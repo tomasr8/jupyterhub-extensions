@@ -1,0 +1,278 @@
+{% extends "page.html" %}
+
+{% block stylesheet %}
+{{ super() }}
+<style type="text/css">
+
+#button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#back-button {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.environment-status {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.environment-status .status-text {
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+
+.environment-status.error .status-text {
+    color: #d9534f;
+}
+
+.environment-status.success .status-text {
+    color: #5cb85c;
+}
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="container d-flex flex-column justify-content-center" style="min-height: 60vh;">
+  <div class="row">
+    <div id="swan-loader" class="d-flex flex-column align-items-center justify-content-center gap-3 py-5 animate">
+      <div class="loader-ring">
+        <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}" alt="SWAN logo">
+      </div>
+      <h4 class="text-body-secondary">Creating environment...</h4>
+    </div>
+  </div>
+  <div class="row">
+    <div class="card">
+        <div id="output-box" class="card-body"></div>
+    </div>
+    <div id="button-container" class="mx-auto">
+      <button id="back-button" class="btn btn-primary">Back to configuration</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script type="text/javascript">
+(function() {
+    'use strict';
+    
+    // Configuration from handler
+    const userServerUrl = "{{ user_server_url }}";
+    const hubBaseUrl = "{{ base_url }}";
+    const serverReady = {{ server_ready | tojson }};
+
+    console.log(userServerUrl, hubBaseUrl, serverReady);
+    
+    // DOM elements
+    const outputBox = document.getElementById('output-box');
+    const backButton = document.getElementById('back-button');
+    const statusContainer = document.getElementById('status-container');
+    const loader = document.getElementById('loader');
+    
+    // State
+    let hasFailed = false;
+    let projectPath = '/';
+    
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const file = ('/' + (urlParams.get('file') || ''))
+        .replace(/\.\.\//g, '')
+        .replace(/\.\.\\/g, '');
+    const userInterface = urlParams.get('user_interface') || 'lab';
+    
+    // Scroll output box into view
+    outputBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    /**
+     * Get XSRF token for authenticated requests
+     */
+    function getAuthHeaders() {
+        const xsrf = document.cookie.match(/\b_xsrf=([^;]*)\b/);
+        return xsrf ? { 'X-XSRFToken': xsrf[1] } : {};
+    }
+    
+    /**
+     * Update the status display
+     */
+    function setStatus(message, isError = false) {
+        const statusText = loader.querySelector('.status-text');
+        const spinner = loader.querySelector('.loader-spinner');
+        
+        statusText.textContent = message;
+        
+        if (isError) {
+            statusContainer.classList.add('error');
+            spinner.style.display = 'none';
+        }
+    }
+    
+    /**
+     * Handle environment creation failure
+     */
+    function handleError(message) {
+        setStatus('Error creating environment', true);
+        backButton.onclick = () => {
+            window.location = hubBaseUrl + 'home?changeconfig';
+        };
+        backButton.style.display = 'block';
+        console.error('Custom environment error:', message);
+    }
+    
+    /**
+     * Handle successful environment creation
+     */
+    function handleSuccess() {
+        setStatus('Environment created successfully!');
+        statusContainer.classList.add('success');
+        
+        // Redirect to user's server with the appropriate interface
+        const redirectUrl = userServerUrl + userInterface + projectPath;
+        setTimeout(() => {
+            window.location = redirectUrl;
+        }, 1000);
+    }
+    
+    /**
+     * Process streamed log output
+     */
+    async function processLogStream(reader, decoder) {
+        try {
+            while (true) {
+                const { done, value } = await reader.read();
+                
+                if (done) {
+                    if (hasFailed) {
+                        handleError('Environment creation failed');
+                    } else {
+                        handleSuccess();
+                    }
+                    break;
+                }
+                
+                // Decode and process each line
+                const text = decoder.decode(value, { stream: true });
+                const lines = text.split('\n').filter(line => line.length > 0);
+                
+                for (const line of lines) {
+                    if (line.startsWith('REPO_PATH:')) {
+                        const repoPath = line.split(':')[1];
+                        if (repoPath && repoPath !== '/') {
+                            projectPath = '/tree' + repoPath + file;
+                        }
+                    } else {
+                        // Append to output box
+                        const lineElement = document.createElement('div');
+                        lineElement.textContent = line;
+                        
+                        // Highlight errors
+                        if (line.includes('ERROR')) {
+                            lineElement.style.color = '#d9534f';
+                            hasFailed = true;
+                        }
+                        
+                        outputBox.appendChild(lineElement);
+                        outputBox.scrollTop = outputBox.scrollHeight;
+                    }
+                }
+            }
+        } catch (error) {
+            handleError('Error reading stream: ' + error.message);
+        }
+    }
+    
+    /**
+     * Wait for the user's server to become available.
+     * Polls the server's API endpoint until it responds successfully.
+     */
+    async function waitForServer(maxAttempts = 60, intervalMs = 2000) {
+        setStatus('Waiting for server to start...');
+        
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                // Try to reach the server's API
+                const response = await fetch(userServerUrl + 'api/status', {
+                    method: 'GET',
+                    headers: getAuthHeaders(),
+                });
+                
+                if (response.ok) {
+                    return true;
+                }
+            } catch (e) {
+                // Server not ready yet, continue waiting
+            }
+            
+            // Update status with progress
+            const elapsed = Math.floor((attempt + 1) * intervalMs / 1000);
+            setStatus(`Waiting for server to start... (${elapsed}s)`);
+            
+            // Wait before next attempt
+            await new Promise(resolve => setTimeout(resolve, intervalMs));
+        }
+        
+        throw new Error('Server did not become available in time');
+    }
+    
+    /**
+     * Call the custom environments API
+     */
+    async function callCustomEnvsApi() {
+        setStatus('Creating custom environment...');
+        
+        // Gather parameters from URL
+        const params = new URLSearchParams({
+            repository: urlParams.get('repository') || '',
+            builder: urlParams.get('builder') || '',
+            builder_version: urlParams.get('builder_version') || '',
+            nxcals: urlParams.get('nxcals') || '',
+        });
+        
+        // Make API call to user's server through JupyterHub's proxy
+        const apiUrl = userServerUrl + 'api/customenvs?' + params.toString();
+        
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: getAuthHeaders(),
+        });
+        
+        if (!response.ok) {
+            throw new Error('Server returned ' + response.status);
+        }
+        
+        return response.body.getReader();
+    }
+    
+    /**
+     * Main entry point - orchestrates the full flow:
+     * 1. Wait for server to be ready (if not already)
+     * 2. Call the custom environments API
+     * 3. Stream and display the output
+     */
+    async function start() {
+        try {
+            // If server isn't ready yet, wait for it
+            if (!serverReady) {
+                await waitForServer();
+            }
+            
+            // Now call the API and stream results
+            const reader = await callCustomEnvsApi();
+            await processLogStream(reader, new TextDecoder('utf-8'));
+            
+        } catch (error) {
+            handleError('Failed: ' + error.message);
+        }
+    }
+    
+    // Start when page loads
+    console.log('yo')
+    start();
+})();
+</script>
+{% endblock %}
