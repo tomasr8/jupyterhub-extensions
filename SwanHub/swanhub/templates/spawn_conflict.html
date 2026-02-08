@@ -1,7 +1,7 @@
 {% extends "page.html" %}
 
 {% block main %}
-  <div class="container d-flex flex-column justify-content-center" style="min-height: 60vh;">
+  <main class="container">
     <div class="row text-center">
       <h1>Session already running</h1>
       <p>A session is running already. Do you want to stop it or go to it?</p>
@@ -16,24 +16,24 @@
         </button>
       </div>
     </div>
-  </div>
+  </main>
 {% endblock %}
 
 {% block script %}
 {{ super() }}
 <script type="text/javascript">
 
-const stopSessionBtn = document.getElementById('stop-session');
-const goToSessionBtn = document.getElementById('go-to-session');
+  const stopSessionBtn = document.getElementById('stop-session');
+  const goToSessionBtn = document.getElementById('go-to-session');
 
-stopSessionBtn.addEventListener('click', () => {
-  const query_params = window.location.search ? '&' + window.location.search.substring(1) : '';
-  window.location.replace('{{base_url}}home?changeconfig' + query_params);
-});
+  stopSessionBtn.addEventListener('click', () => {
+    const query_params = window.location.search ? '&' + window.location.search.substring(1) : '';
+    window.location.replace('{{base_url}}home?changeconfig' + query_params);
+  });
 
-goToSessionBtn.addEventListener('click', () => {
-  window.location.replace(window.location.origin + "/{{ next_url }}");
-});
+  goToSessionBtn.addEventListener('click', () => {
+    window.location.replace(window.location.origin + "/{{ next_url }}");
+  });
 
 </script>
 {% endblock %}

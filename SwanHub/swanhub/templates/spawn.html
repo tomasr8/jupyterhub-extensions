@@ -1,10 +1,10 @@
-{% extends "page.html" %}
+{% extends "templates/spawn.html" %}
 {% if announcement_spawn is string %}
   {% set announcement = announcement_spawn %}
 {% endif %}
 
 {% block main %}
-<main class="container-sm mb-5" style="max-width: 600px;">
+<main class="container justify-content-start" style="max-width: 600px;">
   <div class="row">
     <form enctype="multipart/form-data" id="spawn_form" action="{{ url | safe }}" method="post" role="form">
       {% if error_message %}

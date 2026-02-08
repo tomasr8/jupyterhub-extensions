@@ -6,7 +6,7 @@
 {% block main %}
 
 {% block login %}
-<div class="container d-flex flex-column justify-content-center" style="min-height: 60vh;">
+<main class="container">
   <div class="row">
     <div id="swan-loader" class="d-flex flex-column align-items-center justify-content-center gap-3 py-5 animate">
       <div class="loader-ring">
@@ -15,7 +15,7 @@
       <h4 class="text-body-secondary">Logging you in...</h4>
     </div>
   </div>
-</div>
+</main>
 {% endblock login %}
 
 {% endblock %}
@@ -23,6 +23,6 @@
 {% block script %}
 {{super()}}
 <script type="text/javascript">
-  window.location.replace('{{authenticator_login_url}}');
+  //window.location.replace('{{authenticator_login_url}}');
 </script>
 {% endblock %}

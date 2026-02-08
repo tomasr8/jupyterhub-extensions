@@ -2,7 +2,6 @@
 @import "vars";
 @import url("icons.css");
 
-
 @font-face {
     font-family: 'Roboto';
     font-style: normal;
@@ -20,19 +19,23 @@
          url(fonts/Roboto-400.ttf) format('truetype');
 }
 
-html {
-    height: 100%;
-}
-
+// Page wrapper
 body {
-    min-height: 100%;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
+// Main content area.
+// Short content is vertically centered
+nav + .container, nav + .container-fluid {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+}
+
 footer {
-    // Fix footer to the bottom of the page
-    margin-top: auto;
     // Match header background
     background-color: rgb(var(--bs-tertiary-bg-rgb));
     
@@ -106,7 +109,7 @@ footer {
         border: var(--ring-width) solid color-mix(in srgb, var(--ring-color) 15%, transparent);
     }
 
-    &.loading-error .loader-ring::after {
+    &.loader-error .loader-ring::after {
         border-color: var(--bs-danger);
     }
 

@@ -1,8 +1,7 @@
-{% extends "page.html" %}
+{% extends "templates/stop_pending.html" %}
 
 {% block main %}
-
-<div class="container d-flex flex-column justify-content-center" style="min-height: 60vh;">
+<div class="container">
   <div class="row">
     <div id="swan-loader" class="d-flex flex-column align-items-center justify-content-center gap-3 py-5 animate">
       <div class="loader-ring">
@@ -16,7 +15,6 @@
     </div>
   </div>
 </div>
-
 {% endblock %}
 
 {% block script %}
