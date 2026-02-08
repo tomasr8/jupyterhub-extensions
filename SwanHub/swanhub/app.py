@@ -19,46 +19,6 @@ handlers_map = {
 }
 
 
-from jupyterhub.handlers import BaseHandler
-from tornado import web
-
-
-class SwanCustomEnvironmentsHandler(BaseHandler):
-    """
-    Render the custom environment building view on the Hub.
-    
-    The page will make API calls to the user's single-user server
-    through JupyterHub's proxy at /user/{username}/api/customenvs
-    """
-
-    @web.authenticated
-    async def get(self):
-        user = await self.get_current_user()
-        if user is None:
-            raise web.HTTPError(403)
-        
-        # Get the user's default server (empty string name)
-        spawner = user.spawners.get("")
-        
-        # Check server state - but don't redirect, let the JS handle waiting
-        server_ready = spawner is not None and spawner.ready
-        
-        # If no spawner at all and not pending, redirect to spawn
-        # if spawner is None or (not spawner.ready and not spawner.pending):
-        #     self.redirect(self.hub.base_url + "spawn")
-        #     return
-
-        html = await self.render_template(
-            "customenvs.html",
-            user=user,
-            user_server_url=user.url,
-            server_ready=server_ready,
-            # Progress URL for polling spawn status
-            progress_url=user.url + "api/status",
-        )
-        self.finish(html)
-
-
 class SWAN(app.JupyterHub):
     name = 'swan'
 
@@ -88,7 +48,6 @@ class SWAN(app.JupyterHub):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.template_paths = [get_templates()]
-        self.log.info("SWAN Custom Environments Hub extension loaded")
 
     def init_tornado_settings(self):
         self.template_vars['current_year'] = datetime.datetime.now().year # For copyright message
@@ -108,7 +67,5 @@ class SWAN(app.JupyterHub):
                 cur_handler = list(cur_handler)
                 cur_handler[1] = new_handler
                 self.handlers[i] = tuple(cur_handler)
-        self.handlers.insert(0, (r'/hub/customenvs', SwanCustomEnvironmentsHandler))
-        self.log.info("handlers after SWAN customization: %s", self.handlers)
 
 main = SWAN.launch_instance
