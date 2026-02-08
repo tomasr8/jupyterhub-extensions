@@ -1,4 +1,5 @@
 {% extends "templates/home.html" %}
+{% from "_macros.html" import swan_loader with context %}
 {% if announcement_home is string %}
   {% set announcement = announcement_home %}
 {% endif %}
@@ -10,12 +11,10 @@
       <h1 class="display-6 fw-light text-primary mb-1">Welcome to SWAN</h1>
       <p class="lead text-body-secondary mb-4">Your gateway to interactive analysis</p>
 
-      {# Start new session #}
       <a href="{{ base_url }}spawn" class="btn btn-primary btn-lg px-4 mb-5">
         <i class="fa fa-rocket me-2"></i>Start new session
       </a>
 
-      {# Help links #}
       <div class="d-flex justify-content-center gap-3">
         <a href="https://swan.docs.cern.ch/" class="btn btn-outline-secondary">
           <i class="fa fa-book me-1"></i>Documentation
@@ -26,18 +25,14 @@
       </div>
     </div>
 
-    {# Loading Spinner #}
-    <div id="swan-loader" class="d-none flex-column align-items-center justify-content-center gap-3 py-5">
-      <div class="loader-ring">
-        <img src="{{ static_url('swan/logos/' + swan_logo_filename) }}" alt="SWAN logo">
-      </div>
+    {% call swan_loader(visible=false) %}
       <div>
         <h4 id="shutting-down" class="text-body-secondary">Shutting down your session...</h4>
         <h4 id="shutdown-failed" class="hidden text-danger">
           There was an error shutting down your session. Try again later.
         </h4>
       </div>
-    </div>
+    {% endcall %}
   </main>
 {% endblock %}
 
