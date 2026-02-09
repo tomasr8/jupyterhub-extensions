@@ -19,6 +19,11 @@
          url(fonts/Roboto-400.ttf) format('truetype');
 }
 
+@swan-color-dark: #192738;
+@swan-color-dark-hover: #0053a1;
+@swan-color-light: #edf2f8;
+@swan-color-light-hover: #dae9fb;
+
 // Page wrapper
 body {
     min-height: 100vh;
@@ -33,19 +38,36 @@ nav + .container, nav + .container-fluid {
     // Align short content to ~1/3 of the viewport height (optical center)
     min-height: 55vh;
     justify-content: center;
-    // Keep the footer at the bottom of the page, even if the content is short
-    // margin-bottom: auto;
 }
 
 footer {
+    // Keep the footer at the bottom of the page, even if the content is short
     margin-top: auto;
-    // Match header background
-    .container-fluid {
-        background-color: rgb(var(--bs-tertiary-bg-rgb));
-    }
-    
+
     img {
         max-height: 55px;
+    }
+}
+
+// Use a blue tint for the navbar and footer
+[data-bs-theme="light"] {
+    nav, footer .container-fluid {
+        background-color: @swan-color-light !important;
+    }
+
+    .navbar-nav .nav-link:hover {
+        background-color: @swan-color-light-hover !important;
+    }
+}
+
+[data-bs-theme="dark"] {
+    nav, footer .container-fluid {
+        // background-color: #1c2733 !important;
+        background-color: @swan-color-dark !important;
+    }
+
+    .navbar-nav .nav-link:hover {
+        background-color: @swan-color-dark-hover !important;
     }
 }
 
