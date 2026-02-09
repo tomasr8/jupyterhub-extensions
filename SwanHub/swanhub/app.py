@@ -45,10 +45,6 @@ class SWAN(app.JupyterHub):
             }
         ]
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.template_paths = [get_templates()]
-
     def init_tornado_settings(self):
         self.template_vars['current_year'] = datetime.datetime.now().year # For copyright message
         if datetime.date.today().month == 12:
@@ -57,7 +53,22 @@ class SWAN(app.JupyterHub):
         else:
             self.template_vars['swan_logo_filename'] = 'logo_swan_letters.png' 
 
+        # Register SwanHub templates with the correct priority:
+        # Hub config (c.JupyterHub.template_paths) >> SwanHub templates >> JupyterHub default templates
+        swan_path = get_templates()
+        if swan_path not in self.template_paths:
+            default_path = self._template_paths_default()[0]
+            # Remove the default JupyterHub templates path (will be present if c.JupyterHub.template_paths is not set)
+            # This is to ensure correct ordering of template paths. The default templates will be re-added again
+            # by super().init_tornado_settings() at the end.
+            if default_path in self.template_paths:
+                self.template_paths.remove(default_path)
+            self.template_paths.append(swan_path)
+
         super().init_tornado_settings()
+        # At this point, self.template_paths should be either:
+        # - [swan_path, default_path] (c.JupyterHub.template_paths not set)
+        # - [c.JupyterHub.template_paths, swan_path, default_path] (c.JupyterHub.template_paths set)
 
     def init_handlers(self):
         super().init_handlers()
