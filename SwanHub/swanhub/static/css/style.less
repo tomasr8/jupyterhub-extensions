@@ -27,17 +27,22 @@ body {
 }
 
 // Main content area.
-// Short content is vertically centered
 nav + .container, nav + .container-fluid {
     display: flex;
-    flex: 1;
     flex-direction: column;
+    // Align short content to ~1/3 of the viewport height (optical center)
+    min-height: 55vh;
     justify-content: center;
+    // Keep the footer at the bottom of the page, even if the content is short
+    // margin-bottom: auto;
 }
 
 footer {
+    margin-top: auto;
     // Match header background
-    background-color: rgb(var(--bs-tertiary-bg-rgb));
+    .container-fluid {
+        background-color: rgb(var(--bs-tertiary-bg-rgb));
+    }
     
     img {
         max-height: 55px;
