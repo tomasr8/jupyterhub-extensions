@@ -27,7 +27,7 @@
   const goToSessionBtn = document.getElementById('go-to-session');
 
   stopSessionBtn.addEventListener('click', () => {
-    const query_params = window.location.search ? '&' + window.location.search.substring(1) : '';
+    const query_params = window.location.search ? `&${window.location.search.substring(1)}` : '';
     window.location.replace('{{base_url}}home?changeconfig' + query_params);
   });
 

@@ -2,37 +2,6 @@
 .nb{ font-weight:normal }
 .nbs{ font-weight:normal; font-size:small }
 .news{ font-weight:normal; background-color:yellow }
-#clipboard_config {
-    float: right;
-    position: relative;
-    cursor: pointer;
-    width: fit-content;
-    border: 1px solid #0053A1;
-    border-radius: 8px;
-    padding: 5px;
-    transition: transform 0.2s ease, border-color 0.2s ease;
-}
-#clipboard_config:hover {
-    transform: scale(1.05);
-}
-#tooltip {
-    position: absolute;
-    right: 110%; top: 50%;
-    transform: translateY(-50%);
-    background-color: #333;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 14px;
-    white-space: nowrap;
-    display: none;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-#clipboard_config:hover #tooltip {
-    display: block;
-    opacity: 1;
-}
 #extra_options {
     transition: transform 0.2s ease;
     margin-right: 5px;
@@ -254,14 +223,13 @@
 
         const tooltip = document.getElementById('tooltip');
         navigator.clipboard.writeText(generated_url).then(() => {
-            tooltip.textContent = 'URL Copied!';
+            tooltip.textContent = 'URL copied!';
         }).catch(err => {
             console.error('Failed to copy URL: ', err);
             tooltip.textContent = 'Failed to copy URL, try again!';
         }).finally(() => {
             setTimeout(() => {
                 tooltip.textContent = 'Generate URL';
-                tooltip.style.backgroundColor = '#333';
             }, 3000);
         });
     }
@@ -713,9 +681,12 @@
     window.onload = toggleForm;
 </script>
 <div>
-    <div id="clipboard_config" onclick="copyToClipboard()">
-        <i class="fa fa-clipboard"></i>
-        <span id="tooltip">Generate URL</span>
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Configure your session</h2>
+        <button type="button" class="btn btn-primary" onclick="copyToClipboard()">
+            <i class="fa fa-clipboard"></i>
+            <span id="tooltip">Generate URL</span>
+        </button>
     </div>
 
     <!-- Source Type selection -->
@@ -723,23 +694,26 @@
         <h4>Software</h4>
 
         <div class="mb-3">
-            <label>User Interface<button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('userInterfaceDetails');"><span class='nbs'>more...</span></button></label>
+            <div class="alert alert-warning">
+                Try out our new experimental interface based on JupyterLab and let us know your feedback!
+            </div>
+            <div>
+                <label>User Interface<button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('userInterfaceDetails');"><span class='nbs'>more...</span></button></label>
+            </div>
             <div style="display:none;" id="userInterfaceDetails">
                 <span class='nb'>JupyterLab is the latest web-based interactive development environment for notebooks, code and data. More information <a target="_blank" href="https://jupyterlab.readthedocs.io/en/stable/user/interface.html">here</a>.</span>
             </div>
-            <div class="alert alert-warning">
-                <input
-                    id="use-jupyterlab"
-                    type="checkbox"
-                    name="use-jupyterlab"
-                    value="checked"
-                    class="form-check-input me-1"
-                    onchange="adjustPlatforms(true);"
-                />
-                <label for="use-jupyterlab" class="form-check-label">
-                    Try the new JupyterLab interface (experimental)
-                </label>
-            </div>
+            <input
+                id="use-jupyterlab"
+                type="checkbox"
+                name="use-jupyterlab"
+                value="checked"
+                class="form-check-input me-1"
+                onchange="adjustPlatforms(true);"
+            />
+            <label for="use-jupyterlab" class="form-check-label">
+                Try the new JupyterLab interface (experimental)
+            </label>
         </div>
 
         <div id="software_source_selection" class="mb-3">

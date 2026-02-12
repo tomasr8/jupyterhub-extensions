@@ -19,10 +19,14 @@
          url(fonts/Roboto-400.ttf) format('truetype');
 }
 
-@swan-color-dark: #192738;
-@swan-color-dark-hover: #0053a1;
-@swan-color-light: #edf2f8;
-@swan-color-light-hover: #dae9fb;
+@swan-nav-color-dark: #0f3159;
+@swan-nav-color-dark-hover: #0053a1;
+@swan-nav-color-light: #0053a1;
+@swan-nav-color-light-hover: #00407b;
+
+@swan-heading-color-light: #0053a1;
+@swan-heading-color-dark: #60b2ff;
+
 
 // Page wrapper
 body {
@@ -49,26 +53,64 @@ footer {
     }
 }
 
-// Use a blue tint for the navbar and footer
 [data-bs-theme="light"] {
-    nav, footer .container-fluid {
-        background-color: @swan-color-light !important;
+    h1, h2, h3, h4, h5, h6 {
+        color: @swan-heading-color-light !important;
     }
 
-    .navbar-nav .nav-link:hover {
-        background-color: @swan-color-light-hover !important;
+    nav {
+        background-color: @swan-nav-color-light !important;
+
+        li.nav-item {
+            color: white;
+
+            .nav-link:hover {
+                background-color: @swan-nav-color-light-hover !important;
+            }
+        }
+
+        #dark-theme-toggle {
+            .fa-sun {
+                color: white;
+            }
+
+            .fa-moon {
+                display: none;
+            }
+        }
+
+        #logout {
+            border-color: white !important;
+            color: white !important;
+
+            &:hover {
+                background-color: white !important;
+                color: black !important;
+            }
+        }
     }
 }
 
 [data-bs-theme="dark"] {
-    nav, footer .container-fluid {
-        // background-color: #1c2733 !important;
-        background-color: @swan-color-dark !important;
+    h1, h2, h3, h4, h5, h6 {
+        color: @swan-heading-color-dark !important;
     }
 
-    .navbar-nav .nav-link:hover {
-        background-color: @swan-color-dark-hover !important;
+    nav {
+        background-color: @swan-nav-color-dark !important;
+
+        .nav-link:hover {
+            background-color: @swan-nav-color-dark-hover !important;
+        }
+
+        #dark-theme-toggle .fa-sun {
+            display: none;
+        }
     }
+}
+
+footer .container-fluid {
+    background-color: var(--bs-tertiary-bg) !important;
 }
 
 // Improve color contrast of outline buttons in dark mode
