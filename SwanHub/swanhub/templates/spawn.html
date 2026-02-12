@@ -1,4 +1,5 @@
 {% extends "templates/spawn.html" %}
+{% from "_macros.html" import swan_loader with context %}
 {% if announcement_spawn is string %}
   {% set announcement = announcement_spawn %}
 {% endif %}
@@ -17,21 +18,9 @@
         <div id="spawner-options">
           {{spawner_options_form | safe}}
         </div>
-        {% if save_config %}
-          <div class="form-check mb-3">
-            <input type="checkbox" id="keep-config" name="keep-config" class="form-check-input">
-            <label for="keep-config" class="form-check-label">
-              Always start with this configuration
-            </label>
-          </div>
-        {% endif %}
-        <div class="w-100 text-center">
+        <div class="w-100 text-center mt-3">
           <button type="submit" id="spawn" class="btn btn-default btn-primary btn-lg w-100">
-            <span id="submit-spinner" class="flex hidden align-items-center justify-content-center gap-2">
-              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-              <span role="status">Starting your session...</span>
-            </span>
-            <span id="submit-text">
+            <span>
               <i class="fa fa-rocket me-1"></i>
               Start new session
             </span>
@@ -39,6 +28,13 @@
         </div>
       </div>
     </form>
+
+    {% call swan_loader(visible=false) %}
+      <div class="text-body-secondary text-center">
+        <h4 class="text-body-secondary">Starting your session...</h4>
+        <p>You will be redirected automatically when it's ready for you.</p>
+      </div>
+    {% endcall %}
   </div>
 </main>
 {% endblock %}
@@ -54,15 +50,18 @@
     else console.warn("'use-tn' is not defined, cannot set use-tn checkbox");
   }
 
+  const mainContainer = document.querySelector('main.container');
   const spawnBtn = document.getElementById('spawn');
   const spawnForm = document.getElementById('spawn_form');
-  const submitText = document.getElementById('submit-text');
-  const submitSpinner = document.getElementById('submit-spinner');
+  const loader = document.getElementById('swan-loader');
 
   spawnForm.addEventListener('submit', () => {
-    spawnBtn.setAttribute('disabled', 'disabled');
-    submitText.classList.add('hidden');
-    submitSpinner.classList.remove('hidden');
+    // Hide the form and show the loading spinner
+    spawnForm.classList.add('hidden');
+    loader.classList.remove('d-none');
+    loader.classList.add('d-flex');
+    mainContainer.classList.add('justify-content-center');
+    mainContainer.classList.remove('justify-content-start');
   });
 
   // This runs when user comes back via browser history (e.g. Back button)
