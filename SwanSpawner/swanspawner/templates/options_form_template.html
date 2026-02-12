@@ -10,6 +10,12 @@
     pointer-events: none;
     opacity: 0.6;
 }
+label.form-label {
+    margin-bottom: 0;
+}
+.form-label > span {
+    font-weight: bold;
+}
 </style>
 <script type="text/javascript">
 
@@ -698,7 +704,7 @@
                 Try out our new experimental interface based on JupyterLab and let us know your feedback!
             </div>
             <div>
-                <label>User Interface<button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('userInterfaceDetails');"><span class='nbs'>more...</span></button></label>
+                <label class="form-label"><span>User Interface</span><button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('userInterfaceDetails');"><span class='nbs'>more...</span></button></label>
             </div>
             <div style="display:none;" id="userInterfaceDetails">
                 <span class='nb'>JupyterLab is the latest web-based interactive development environment for notebooks, code and data. More information <a target="_blank" href="https://jupyterlab.readthedocs.io/en/stable/user/interface.html">here</a>.</span>
@@ -717,7 +723,7 @@
         </div>
 
         <div id="software_source_selection" class="mb-3">
-            <label>Source <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('sourceDetails');"><span class='nbs'>more...</span></button>
+            <label class="form-label"><span>Source</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('sourceDetails');"><span class='nbs'>more...</span></button></label>
                 <div style="display:none;" id="sourceDetails">
                     <span class='nb'>Software source: curated stack (LCG) or custom environment.</span>
                 </div>
@@ -737,7 +743,7 @@
     <div id="lcg_config">
         <div id="lcgSection">
             <div class="mb-3">
-                <label for="lcgOptions">Software stack <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('lcgDetails');"><span class='nbs'>more...</span></button>
+                <label for="lcgOptions" class="form-label"><span>Software stack</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('lcgDetails');"><span class='nbs'>more...</span></button>
                     <div style="display:none;" id="lcgDetails">
                         <span class='nb'>The software stack to associate to the container. See the <a target="_blank" href="http://lcginfo.cern.ch/">LCG package info</a> page.</span>
                         <br>
@@ -762,7 +768,7 @@
         </div>
         
         <div id="platformSection" class="mb-3">
-            <label for="platformsOptions">Platform <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('platformDetails');"><span class='nbs'>more...</span></button>
+            <label for="platformsOptions" class="form-label"><span>Platform</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('platformDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="platformDetails">
                     <span class='nb'>The combination of compiler version and flags.</span>
                 </div>
@@ -772,7 +778,7 @@
         </div>
 
         <div id="scriptenvSection" class="mb-3">
-            <label for="scriptenvOption">Environment script <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('scriptenvDetails');"><span class='nbs'>more...</span></button>
+            <label for="scriptenvOption" class="form-label"><span>Environment script</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('scriptenvDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="scriptenvDetails">
                     <span class='nb'>User-provided bash script to define custom environment variables. The variable CERNBOX_HOME is resolved to the proper /eos/user/u/username directory.</span>
                 </div>
@@ -784,7 +790,7 @@
     <!-- Custom environment configuration -->
     <div id="customenv_config">
         <div id="repositorySection" class="mb-3">
-            <label for="repositoryOption">Repository 
+            <label for="repositoryOption" class="form-label"><span>Repository</span> 
                 <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('repositoryDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="repositoryDetails">
                     <span class='nb'>URL of a git repository containing a requirements file.</span>
@@ -804,7 +810,7 @@
         </div>
 
         <div id="builderSection" class="mb-3">
-            <label for="builderOptions">Builder <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('builderDetails');"><span class='nbs'>more...</span></button>
+            <label for="builderOptions" class="form-label"><span>Builder</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('builderDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="builderDetails">
                     <span class='nb'>Acc-Py release to build the custom environment.</a></span>
                 </div>
@@ -833,7 +839,7 @@
         <h4 for="session-resources">Session resources</h4>
 
         <div id="coresSection" class="mb-3">
-                <label for="coresOptions">CPU <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('coresDetails');"><span class='nbs'>more...</span></button>
+                <label for="coresOptions" class="form-label"><span>CPU</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('coresDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="coresDetails">
                     <span class='nb'>Number of CPU cores to associate to the container.</span>
                 </div>
@@ -842,7 +848,7 @@
         </div>
 
         <div id="memorySection" class="mb-3">
-            <label for="memoryOptions">Memory <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('memoryDetails');"><span class='nbs'>more...</span></button>
+            <label for="memoryOptions" class="form-label"><span>Memory</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('memoryDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="memoryDetails">
                     <span class='nb'>Amount of memory allocated to the container.</span>
                 </div>
@@ -851,7 +857,7 @@
         </div>
 
         <div id="gpuSection" class="mb-3">
-            <label for="gpuOptions">GPU <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('gpuDetails');"><span class='nbs'>more...</span></button>
+            <label for="gpuOptions" class="form-label"><span>GPU</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('gpuDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="gpuDetails">
                     <span class='nb'>GPU model or flavour to attach to the container.</span>
                 </div>
@@ -865,7 +871,7 @@
         <h4>External computing resources</h4>
         
         <div id="clusterSection" class="mb-3">
-            <label for="clustersOptions">Spark cluster <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('clustersDetails');"><span class='nbs'>more...</span></button>
+            <label for="clustersOptions" class="form-label"><span>Spark cluster</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('clustersDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="clustersDetails">
                     <span class='nb'>Name of the Spark cluster to connect to from notebooks. See the <a target="_blank" href="https://hadoop-user-guide.web.cern.ch/">Hadoop User guide</a> and the <a target="_blank" href="https://sparktraining.web.cern.ch/">Spark training course</a></span>
                 </div>
@@ -874,7 +880,7 @@
         </div>
 
         <div id="condorSection" class="mb-3">
-            <label for="condorOptions">HTCondor pool <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('condorDetails');"><span class='nbs'>more...</span></button>
+            <label for="condorOptions" class="form-label"><span>HTCondor pool</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('condorDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="condorDetails">
                     <span class='nb'>Name of the HTCondor pool to use.</span>
                 </div>
@@ -891,7 +897,7 @@
         <!-- Rucio Data Management -->
         <div id="rucioSection" style="display: none;">
             <div class="mb-3">
-                <label for="rucioOptions">Rucio Instance <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('rucioDetails');"><span class='nbs'>more...</span></button>
+                <label for="rucioOptions" class="form-label"><span>Rucio Instance</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('rucioDetails');"><span class='nbs'>more...</span></button>
                     <div style="display:none;" id="rucioDetails">
                         <span class='nb'>Name of the Rucio instance to connect to from notebooks.</span>
                     </div>
@@ -899,7 +905,7 @@
                 <select id="rucioOptions" name="rucio" class="form-select" onchange="updateRseOptions()"></select>
             </div>
             <div class="mb-3">
-                <label for="rseOptions">Rucio RSE <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('rucioRSEDetails');"><span class='nbs'>more...</span></button>
+                <label for="rseOptions" class="form-label"><span>Rucio RSE</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('rucioRSEDetails');"><span class='nbs'>more...</span></button>
                     <div style="display:none;" id="rucioRSEDetails">
                         <span class='nb'>Rucio Storage Element to mount in the session.</span>
                     </div>
@@ -913,7 +919,7 @@
 
         <!-- File path information text -->
         <div id="fileSection" class="mb-3" style="display: none;">
-            <label for="fileOption">File path <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('fileDetails');"><span class='nbs'>more...</span></button>
+            <label for="fileOption" class="form-label"><span>File path</span> <button type="button" class="btn btn-link btn-sm" onclick="toggleVisibility('fileDetails');"><span class='nbs'>more...</span></button>
                 <div style="display:none;" id="fileDetails">
                     <span id="lcg-details" class='nb'>Path of the file to be opened after the session is launched, relative to CERNBOX_HOME.</span>
                     <span id="customenv-details" class='nb'>Path of the file to be opened after the session is launched, relative to the root of the git repository.</span>
