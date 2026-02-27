@@ -43,8 +43,6 @@ try:
 except ImportError:
     from urllib import quote, urlencode
 
-import dateutil.parser
-
 from tornado.gen import coroutine, multi
 from tornado.locks import Semaphore
 from tornado.log import app_log
@@ -72,7 +70,7 @@ def parse_date(date_string):
 
     Returned datetime object will always be timezone-aware
     """
-    dt = dateutil.parser.parse(date_string)
+    dt = datetime.fromisoformat(date_string)
     if not dt.tzinfo:
         # assume naïve timestamps are UTC
         dt = dt.replace(tzinfo=timezone.utc)
