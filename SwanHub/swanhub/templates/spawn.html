@@ -4,28 +4,28 @@
   {% set announcement = announcement_spawn %}
 {% endif %}
 
+{% block stylesheet %}
+  {{ super() }}
+  <link rel="stylesheet" type="text/css" href="{{ static_url('swan/options-form/options-form.css') }}">
+{% endblock %}
+
 {% block main %}
-<main class="container justify-content-start" style="max-width: 600px;">
-  <div class="row">
-    <form enctype="multipart/form-data" id="spawn_form" action="{{ url | safe }}" method="post" role="form">
-      {% if error_message %}
+<main class="container justify-content-start" style="max-width: 750px;">
+  {% set error_message = "<b>Hmm this didn't work...</b>" %}
+  {% if error_message %}
+    <div class="row">
+      <div class="col">
         <div class="alert alert-danger alert-dismissible" role="alert">
           {{error_message | safe}}
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-      {% endif %}
+      </div>
+    </div>
+  {% endif %}
+  <div class="row">
+    <form enctype="multipart/form-data" id="spawn_form" action="{{ url | safe }}" method="post" role="form">
       <div>
-        <div id="spawner-options">
-          {{spawner_options_form | safe}}
-        </div>
-        <div class="w-100 text-center mt-3">
-          <button type="submit" id="spawn" class="btn btn-default btn-primary btn-lg w-100">
-            <span>
-              <i class="fa fa-rocket me-1"></i>
-              Start new session
-            </span>
-          </button>
-        </div>
+        {{spawner_options_form | safe}}
       </div>
     </form>
 
@@ -40,31 +40,19 @@
 {% endblock %}
 
 {% block script %}
+<script type="module" src="{{ static_url('swan/options-form/options-form.js') }}"></script>
 <script type="text/javascript">
-  /*
-  * This function keeps the "use-tn" checkbox in sync, whether the cluster is exposed to the TN or not.
-  */
-  function updateUseTnCheckbox() {
-    const tnCheckbox = document.getElementById('use-tn');
-    if (tnCheckbox) tnCheckbox.checked = '{{ tn_enabled }}' === 'True';
-    else console.warn("'use-tn' is not defined, cannot set use-tn checkbox");
-  }
-
+  // Hide the form and show the loading spinner on submit.
   const mainContainer = document.querySelector('main.container');
-  const spawnBtn = document.getElementById('spawn');
   const spawnForm = document.getElementById('spawn_form');
   const loader = document.getElementById('swan-loader');
 
   spawnForm.addEventListener('submit', () => {
-    // Hide the form and show the loading spinner
     spawnForm.classList.add('hidden');
     loader.classList.remove('d-none');
     loader.classList.add('d-flex');
     mainContainer.classList.add('justify-content-center');
     mainContainer.classList.remove('justify-content-start');
   });
-
-  // This runs when user comes back via browser history (e.g. Back button)
-  window.onpageshow = () => updateUseTnCheckbox();
 </script>
 {% endblock %}

@@ -9,7 +9,7 @@ class SpawnHandlersConfigs(SingletonConfigurable):
         Singleton class where all the configurations are stored
     """
 
-    software_source = 'software_source'
+    software_source = 'source'
 
     builder = 'builder'
 
@@ -17,17 +17,17 @@ class SpawnHandlersConfigs(SingletonConfigurable):
 
     repository = 'repository'
 
-    lcg_rel_field = 'lcg'
+    lcg_rel_field = 'release'
 
     spark_cluster_field = 'clusters'
 
-    user_script_env_field = 'scriptenv'
+    user_env_script_field = 'env_script'
 
     file = 'file'
 
     user_interface = 'user_interface'
 
-    use_jupyterlab_field = 'use-jupyterlab'
+    use_jupyterlab_field = 'use_jupyterlab'
 
     use_tn_field = 'use-tn'
 

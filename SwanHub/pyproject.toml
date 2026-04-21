@@ -48,4 +48,8 @@ packages = ["swanhub"]
 dependencies = ["hatch-jupyter-builder==0.9.1"]
 build-function = "hatch_jupyter_builder.npm_builder"
 # Fail the build if the target files are not created:
-ensured-targets = ["swanhub/static/css/style.css"]
+ensured-targets = [
+  "swanhub/static/css/style.css",
+  "swanhub/static/options-form/options-form.js",
+  "swanhub/static/options-form/options-form.css",
+]

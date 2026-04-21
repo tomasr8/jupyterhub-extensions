@@ -13,6 +13,33 @@ import yaml
 from jinja2 import Environment, FileSystemLoader
 from traitlets import Bool, Int, List, Unicode
 
+# ── Wire format (browser -> server) ────────────────────────────────────────────
+# The options form POSTs a single JSON payload with the keys below. All fields
+# that can be derived server-side (platform, rse mount path, etc.) are NOT sent.
+#
+# {
+#   "source":           "lcg" | "customenv",
+#   "release":          "LCG_109_swan",            # lcg only
+#   "builder":          "venv:default",            # customenv only
+#   "repository":       "https://...",             # customenv only
+#   "envScript":        "$CERNBOX_HOME/...",       # lcg only
+#   "cores":            4,                         # int
+#   "memory":           8,                         # int (GB)
+#   "gpu":              "v100" | "none",
+#   "cluster":          "hadoop-analytix" | "none",
+#   "condor":           "cern_condor" | "none",    # lcg only
+#   "rucio":            "atlas" | "none",          # lcg only
+#   "rucioRse":         "CERN-PROD_DAQ" | "none",  # lcg only
+#   "useJupyterLab":    true | false,
+#   "useLocalPackages": true | false               # lcg only
+# }
+#
+# ── Internal format (backend) ─────
+# Keys are snake_case. Derived fields (platform, rucio_rse_mount_path,
+# rucio_path_begins_at, builder_version) are populated by options_from_form.
+# See _process_lcg / _process_customenv for the full set.
+
+
 
 def get_repo_name_from_options(user_options: dict) -> str:
     """
@@ -51,7 +78,7 @@ def define_SwanSpawner_from(base_class):
 
         platform_field = 'platforms'
 
-        user_script_env_field = 'scriptenv'
+        user_env_script_field = 'env_script'
 
         user_n_cores = 'cores'
 
@@ -145,177 +172,220 @@ def define_SwanSpawner_from(base_class):
             # Dictionary with dynamic information to insert in the options form
             self._dynamic_form_info = {}
 
-        def _popup_error(self, options: dict, invalid_selection: str) -> None:
-            """ Raise an error if the selection is invalid """
-            err_msg = f'Invalid {invalid_selection} selection: {options[invalid_selection]}'
-            self.log.error(err_msg)
-            raise ValueError(err_msg)
-
-        def _get_selection(self, options_form_config: dict, options: dict, parent: str) -> dict:
-            """
-            Get major selection which can be either a builder, for customenvs, or a LCG release.
-            Each selection has its own minor options that need to be validated, as well.
-            """
-            selection = next((_ for _ in options_form_config[f'{options[self.software_source]}_options'] if _['type'] == 'selection' and options[parent] == _[parent]['value']), None)
-            if not selection:
-                self._popup_error(options, parent)
-            return selection
-
-        def _validate_selection_options(self, selection: dict, options: dict) -> None:
-            """
-            Ensure the validity of the minor options selected by the user,
-            to prevent the acceptance of malicious / erroneous values
-            """
-            # Skip validation for certain nested configuration attributes and metadata fields
-            for attr, available_options in selection.items():
-                # Skip attributes that are not actual form selections
-                if attr == self.rucio_instance:
-                    self._validate_rucio_options(selection, options)
-                elif attr in [self.rucio_rse, self.rucio_rse_mount_path, self.rucio_path_begins_at]:
-                    continue
-                # Only validate if available_options is a list of options
-                elif type(available_options) == list and options.get(attr) not in (_.get('value') for _ in available_options):
-                    self._popup_error(options, attr)
-
-        def _validate_rucio_options(self, selection: dict, formdata: dict) -> dict:
-            """
-            Validate and extract Rucio-related options from the form data.
-            Returns a dictionary with validated Rucio options.
-            """
-            rucio_options = {}
-
-            # Get Rucio instance selection
-            rucio_instance = formdata.get(self.rucio_instance, ['none'])
-            self.log.info(f'Validating Rucio instance selection: {rucio_instance}')
-            rucio_options[self.rucio_instance] = rucio_instance
-
-            # If no Rucio instance selected, set defaults and return
-            if rucio_instance == 'none':
-                rucio_options[self.rucio_rse] = 'none'
-                rucio_options[self.rucio_rse_mount_path] = ''
-                rucio_options[self.rucio_path_begins_at] = '0'
-                return rucio_options
-
-            # Get Rucio configuration from selection
-            rucio_instances = selection.get('rucio', [])
-            if not rucio_instances:
-                raise ValueError('Rucio configuration not found in YAML for selected LCG stack')
-
-            # Find the selected Rucio instance configuration
-            selected_rucio_inst = next(
-                (inst for inst in rucio_instances if inst['value'] == rucio_instance),
-                None
-            )
-
-            if not selected_rucio_inst:
-                raise ValueError(f'Invalid Rucio instance: {rucio_instance}')
-
-            # Validate RSE selection
-            selected_rse = formdata.get(self.rucio_rse, ['none'])
-            rse_options = selected_rucio_inst.get('rse_options', [])
-
-            # Validate that the selected RSE is in the available options
-            valid_rses = [rse['value'] for rse in rse_options]
-            if selected_rse not in valid_rses:
-                raise ValueError(
-                    f'Invalid RSE selection: {selected_rse} for Rucio instance: {rucio_instance}. '
-                    f'Valid options are: {", ".join(valid_rses)}'
-                )
-
-            # Find the selected RSE configuration to get mount path and path_begins_at
-            selected_rse_config = next(
-                (rse for rse in rse_options if rse['value'] == selected_rse),
-                None
-            )
-
-            if not selected_rse_config:
-                raise ValueError(f'RSE configuration not found for: {selected_rse}')
-
-            # Extract RSE-specific attributes
-            rucio_options[self.rucio_rse] = selected_rse
-            rucio_options[self.rucio_rse_mount_path] = selected_rse_config.get('rse_mount_path', '')
-            rucio_options[self.rucio_path_begins_at] = str(selected_rse_config.get('path_begins_at', 0))
-
-            # Validate that we received the expected hidden field values (as a sanity check)
-            form_mount_path = formdata.get(self.rucio_rse_mount_path, [''])
-            form_path_begins = formdata.get(self.rucio_path_begins_at, ['0'])
-
-            if form_mount_path and form_mount_path != rucio_options[self.rucio_rse_mount_path]:
-                self.log.warning(
-                    f'Mount path mismatch: form={form_mount_path}, '
-                    f'expected={rucio_options[self.rucio_rse_mount_path]}'
-                )
-
-            if form_path_begins and form_path_begins != rucio_options[self.rucio_path_begins_at]:
-                self.log.warning(
-                    f'Path begins at mismatch: form={form_path_begins}, '
-                    f'expected={rucio_options[self.rucio_path_begins_at]}'
-                )
-
-            return rucio_options
-
-        def options_from_form(self, formdata: dict) -> dict:
-            """
-            Get the options from the form and validate them according to the available options
-            given by the configuration file, and raises errors for invalid selections.
-            """
+        def _load_options_form_config(self) -> dict:
             with open(self.options_form_config) as yaml_file:
-                options_form_config = yaml.safe_load(yaml_file)
+                return yaml.safe_load(yaml_file)
 
-            # Get common options
-            options = {}
-            options[self.software_source]           = formdata[self.software_source][0]
-            options[self.user_n_cores]              = formdata[self.user_n_cores][0]
-            options[self.user_memory]               = formdata[self.user_memory][0]
-            options[self.spark_cluster_field]       = formdata.get(self.spark_cluster_field, ['none'])[0]
-            options[self.use_jupyterlab_field]      = formdata.get(self.use_jupyterlab_field, 'unchecked')[0]
-            options[self.gpu]                       = formdata.get(self.gpu, ['none'])[0]
-            options[self.rucio_instance]            = formdata.get(self.rucio_instance, ['none'])[0]
-            options[self.rucio_rse]                 = formdata.get(self.rucio_rse, ['none'])[0]
-            options[self.rucio_rse_mount_path]      = formdata.get(self.rucio_rse_mount_path, [''])[0]
-            options[self.rucio_path_begins_at]      = formdata.get(self.rucio_path_begins_at, ['0'])[0]
+        def _build_release_index(self, config: dict) -> dict:
+            """
+            Flatten lcg_releases into a {release_value: {profile, platform, label, category}}
+            lookup. This is the inverse of the nested-category layout used in the YAML.
+            """
+            idx = {}
+            for cat_key, cat in (config.get('lcg_releases') or {}).items():
+                for rel in cat.get('releases', []) or []:
+                    idx[rel['value']] = {
+                        'profile':  rel['profile'],
+                        'platform': rel['platform'],
+                        'label':    rel.get('label', rel['value']),
+                        'category': cat_key,
+                    }
+            return idx
 
-            # File to be opened when the session gets started
-            options[self.file]                      = formdata.get(self.file, [''])[0]
+        def _build_builder_index(self, config: dict) -> dict:
+            """Flatten custom_environments.builders into a {builder_value: {profile, label}} lookup."""
+            idx = {}
+            for b in (config.get('custom_environments') or {}).get('builders') or []:
+                idx[b['value']] = {
+                    'profile': b['profile'],
+                    'label':   b.get('label', b['value']),
+                }
+            return idx
 
-            if options[self.software_source] == self.customenv_special_type:
-                # Builders can have a version or not. When they do, we receive the following text from the form: builder:builder_version
-                options[self.builder] = formdata.get(self.builder, [''])[0].lower()
-                selection = self._get_selection(options_form_config, options, self.builder)
+        def _get_profile(self, config: dict, profile_name: str) -> dict:
+            """Return the named resource profile, or raise if unknown."""
+            p = (config.get('resource_profiles') or {}).get(profile_name)
+            if p is None:
+                raise ValueError(f'Unknown resource profile: {profile_name!r}')
+            return p
 
-                # Validate user selected options with what is on the yaml form
-                self._validate_selection_options(selection, options)
+        @staticmethod
+        def _allowed_values(items: list) -> set:
+            """
+            Normalize a profile field (plain-value list like [2, 4] or {value,label}
+            list like [{value:k8s,label:"..."}]) into a set of legal values.
+            """
+            return {item['value'] if isinstance(item, dict) else item for item in (items or [])}
 
-                if options[self.builder].count(':') == 1:
-                    options[self.builder], options[self.builder_version] = options[self.builder].split(':')
+        def _validate_profile_fields(self, profile: dict, payload: dict, fields: list) -> None:
+            """
+            For each (payload_key, profile_field) pair, check the submitted value
+            is legal per the profile definition.
+            """
+            for payload_key, profile_field in fields:
+                allowed = self._allowed_values(profile.get(profile_field, []))
+                if not allowed:
+                    # Nothing declared ⇒ accept anything (typically 'none').
+                    continue
+                value = payload.get(payload_key)
+                if value not in allowed:
+                    raise ValueError(f'Invalid {payload_key} selection: {value!r}')
 
-                options[self.repository] = formdata.get(self.repository, [''])[0]
-                if not options[self.repository] and options[self.builder] not in self.stacks_for_customenvs:
-                    raise ValueError('Cannot create custom software environment: no repository specified')
-            elif options[self.software_source] == self.lcg_special_type:
-                options[self.lcg_rel_field]             = formdata[self.lcg_rel_field][0]
-                options[self.platform_field]            = formdata[self.platform_field][0]
-                options[self.user_script_env_field]     = formdata[self.user_script_env_field][0]
-                options[self.condor_pool]               = formdata[self.condor_pool][0]
-                options[self.use_local_packages_field]  = formdata.get(self.use_local_packages_field, 'unchecked')[0]
+        # ── Rucio resolution (server-side) ──────────────────────────────────
 
-                selection = self._get_selection(options_form_config, options, self.lcg_rel_field)
+        def _resolve_rucio(self, config: dict, instance_name: str, rse_name: str) -> dict:
+            """
+            Resolve the Rucio instance + RSE selection against the global rucio
+            config. Returns a dict of the 4 rucio_* internal-dict keys.
+            """
+            if instance_name == 'none':
+                return {
+                    'rucio_instance':       'none',
+                    'rucio_rse':            'none',
+                    'rucio_rse_mount_path': '',
+                    'rucio_path_begins_at': 0,
+                }
 
-                # Validate user selected options with what is on the yaml form
-                self._validate_selection_options(selection, options)
-                # There are software stacks that use customenvs' logic for building environments. So, we need to
-                # adjust the software_source accordingly
-                # Also, let the extension know which user interface to use (jupyterlab or classic notebook)
-                if options[self.lcg_rel_field].split("-")[0] in self.stacks_for_customenvs:
-                    options[self.software_source] = self.customenv_special_type
-                    options[self.user_interface] = 'lab' if options[self.use_jupyterlab_field] == 'checked' else 'projects'
+            instances = (config.get('rucio') or {}).get('instances') or []
+            instance = next((i for i in instances if i.get('value') == instance_name), None)
+            if instance is None:
+                raise ValueError(f'Invalid Rucio instance: {instance_name!r}')
+
+            rse_opts = instance.get('rse_options') or []
+            rse = next((r for r in rse_opts if r.get('value') == rse_name), None)
+            if rse is None:
+                valid = ', '.join(r.get('value', '') for r in rse_opts) or '(none)'
+                raise ValueError(
+                    f'Invalid RSE selection: {rse_name!r} for Rucio instance '
+                    f'{instance_name!r}. Valid options are: {valid}'
+                )
+
+            return {
+                'rucio_instance':       instance_name,
+                'rucio_rse':            rse_name,
+                'rucio_rse_mount_path': rse.get('mount_path', ''),
+                'rucio_path_begins_at': int(rse.get('path_begins_at', 0)),
+            }
+
+        def options_from_form(self, payload: dict) -> dict:
+            """
+            Read the form's JSON payload, validate against the YAML config, and
+            return a normalized internal options dict (snake_case keys, proper
+            types, server-derived fields filled in).
+            """
+            config = self._load_options_form_config()
+            source = payload.get('source')
+
+            if source == 'lcg':
+                return self._process_lcg(config, payload)
+            elif source == 'customenv':
+                return self._process_customenv(config, payload)
             else:
-                self._popup_error(options, self.software_source)
+                raise ValueError(f'Invalid source: {source!r}')
 
-            # Format resource options to do request
-            options[self.user_n_cores] = int(options[self.user_n_cores])
-            options[self.user_memory]  = options[self.user_memory] + 'G'
-            self.offload = options[self.spark_cluster_field] != 'none'
+        def _process_lcg(self, config: dict, payload: dict) -> dict:
+            """Validate and normalize an LCG release selection."""
+            release = payload.get('release')
+            release_meta = self._build_release_index(config).get(release)
+            if release_meta is None:
+                raise ValueError(f'Invalid release: {release!r}')
+
+            profile = self._get_profile(config, release_meta['profile'])
+            self._validate_profile_fields(profile, payload, [
+                ('cores',   'cores'),
+                ('memory',  'memory'),
+                ('cluster', 'clusters'),
+                ('condor',  'condor'),
+            ])
+
+            rucio = self._resolve_rucio(
+                config,
+                payload.get('rucio', 'none'),
+                payload.get('rucioRse', 'none'),
+            )
+
+            options = {
+                # user's declared intent (preserved even if source is flipped below)
+                'user_source':        'lcg',
+                # effective build mode (may be flipped to 'customenv' for lhcb-* etc.)
+                'source':             'lcg',
+                'release':            release,
+                'platform':           release_meta['platform'],  # server-derived
+                'env_script':         payload.get('envScript', ''),
+                'cores':              payload['cores'],
+                'memory':             payload['memory'],
+                'gpu':                payload.get('gpu', 'none'),
+                'cluster':            payload.get('cluster', 'none'),
+                'condor':             payload.get('condor', 'none'),
+                'use_jupyterlab':     bool(payload.get('useJupyterLab')),
+                'use_local_packages': bool(payload.get('useLocalPackages')),
+                'file':               payload.get('file', ''),
+                **rucio,
+            }
+
+            # Some LCG releases (e.g. lhcb-default) are actually custom-env builds;
+            # flip the effective build mode so downstream logic takes the customenv
+            # path. `user_source` above preserves the user's actual card selection.
+            # `user_interface` is consumed by SwanHub for these overridden sessions.
+            # We also pre-populate builder + builder_version from the release name
+            # (e.g. "lhcb-default" -> builder="lhcb", builder_version="default") so
+            # downstream consumers see a uniform customenv shape.
+            #
+            # NB: this convention -- release values for stacks_for_customenvs entries
+            # are formatted "<builder>-<version>" -- is shared with SwanCustomEnvs,
+            # which consumes the resulting `builder` / `builder_version` fields and
+            # with SwanHub.spawn_handler, which forwards them as URL query params.
+            # Changing the format here means updating both consumers.
+            if release.split('-')[0] in self.stacks_for_customenvs:
+                options['source'] = 'customenv'
+                options['user_interface'] = 'lab' if options['use_jupyterlab'] else 'projects'
+                builder_name, _, builder_version = release.partition('-')
+                options['builder'] = builder_name
+                options['builder_version'] = builder_version
+
+            return options
+
+        def _process_customenv(self, config: dict, payload: dict) -> dict:
+            """Validate and normalize a custom-environment builder selection."""
+            builder_spec = (payload.get('builder') or '').lower()
+            builder_meta = self._build_builder_index(config).get(builder_spec)
+            if builder_meta is None:
+                raise ValueError(f'Invalid builder: {builder_spec!r}')
+
+            profile = self._get_profile(config, builder_meta['profile'])
+            self._validate_profile_fields(profile, payload, [
+                ('cores',   'cores'),
+                ('memory',  'memory'),
+                ('cluster', 'clusters'),
+            ])
+
+            # Builder values are "name:version" (e.g. "venv:default")
+            if builder_spec.count(':') == 1:
+                builder_name, builder_version = builder_spec.split(':')
+            else:
+                builder_name, builder_version = builder_spec, ''
+
+            repository = payload.get('repository', '')
+            if not repository and builder_name not in self.stacks_for_customenvs:
+                raise ValueError('Cannot create custom software environment: no repository specified')
+
+            options = {
+                'user_source':        'customenv',
+                'source':             'customenv',
+                'builder':            builder_name,
+                'builder_version':    builder_version,
+                'repository':         repository,
+                'cores':              payload['cores'],
+                'memory':             payload['memory'],
+                'gpu':                payload.get('gpu', 'none'),
+                'cluster':            payload.get('cluster', 'none'),
+                'use_jupyterlab':     bool(payload.get('useJupyterLab')),
+                'file':               payload.get('file', ''),
+                # Customenv-only payload: condor, use_local_packages, and rucio_*
+                # are intentionally not set here. Every downstream consumer reads
+                # them via .get() with a 'none'/False/'' default, or guards the
+                # access on `source == 'lcg'`.
+            }
 
             return options
 
@@ -353,12 +423,12 @@ def define_SwanSpawner_from(base_class):
                 env.update(dict(
                     ROOT_LCG_VIEW_NAME       = self.user_options[self.lcg_rel_field],
                     ROOT_LCG_VIEW_PLATFORM   = self.user_options[self.platform_field],
-                    USER_ENV_SCRIPT          = self.user_options[self.user_script_env_field],
+                    USER_ENV_SCRIPT          = self.user_options[self.user_env_script_field],
                     ROOT_LCG_VIEW_PATH       = self.lcg_view_path
                 ))
 
                 # Append path of user packages installed on CERNBox to PYTHONPATH
-                if self.user_options.get(self.use_local_packages_field) == 'checked':
+                if self.user_options.get(self.use_local_packages_field):
                     env.update(dict(
                         SWAN_USE_LOCAL_PACKAGES = 'true'
                     ))
@@ -380,7 +450,7 @@ def define_SwanSpawner_from(base_class):
                     ))
 
             # Enable JupyterLab interface
-            if self.user_options[self.use_jupyterlab_field] == 'checked':
+            if self.user_options[self.use_jupyterlab_field]:
                 env.update(dict(
                     SWAN_USE_JUPYTERLAB = 'true'
                 ))
@@ -436,7 +506,7 @@ def define_SwanSpawner_from(base_class):
                         "Detected user environment script setup failure (exit code 127)")
                     raise RuntimeError(
                         f"User environment script failed: "
-                        f"Could not find the script '{self.user_options[self.user_script_env_field]}'."
+                        f"Could not find the script '{self.user_options.get(self.user_env_script_field, '')}'."
                     )
 
             return container_exit_code
@@ -449,7 +519,7 @@ def define_SwanSpawner_from(base_class):
             start_time_start_container = time.time()
 
             #if the user script exists, we allow extended timeout
-            if self.user_options.get(self.user_script_env_field, '').strip() != '':
+            if self.user_options.get(self.user_env_script_field, '').strip() != '':
                 self.start_timeout = self.extended_timeout
 
             # start configured container
@@ -469,17 +539,17 @@ def define_SwanSpawner_from(base_class):
             self.log.info("user: %s, host: %s, metric: %s, value: %s" % (user, host, metric, value))
 
         def _render_templated_options_form(self, spawner):
-            """
-            Render a form from a template based on options_form_config yaml config file
-            """
+            """Render the options form React mount point."""
             templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
             env = Environment(loader=FileSystemLoader(templates_dir))
             template = env.get_template('options_form_template.html')
 
             try:
-                with open(self.options_form_config) as yaml_file:
-                    options_form_config = yaml.safe_load(yaml_file)
-                return template.render(options_form_config=options_form_config, dynamic_form_info=json.dumps(self._dynamic_form_info), general_domain_name=self.general_domain_name, ats_domain_name=self.ats_domain_name)
+                config = self._load_options_form_config()
+                return template.render(
+                    config_json       = json.dumps(config),
+                    dynamic_form_info = json.dumps(self._dynamic_form_info),
+                )
             except Exception as ex:
                 self.log.error("Could not initialize form: %s", ex, exc_info=True)
                 raise RuntimeError(

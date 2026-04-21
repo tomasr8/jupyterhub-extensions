@@ -3,6 +3,7 @@
 
 """CERN Spawn handler"""
 
+import json
 import time
 from socket import (
     gethostname,
@@ -68,18 +69,6 @@ class SpawnHandler(JHSpawnHandler):
             self.finish(form)
             return
 
-        # If the request contains query arguments provided via URL,
-        # parse and validate them. If successful, render the form
-        # with those arguments.
-        if self.request.query_arguments:
-            error_message, _ = self._validate_mandatory_options(configs, self.request.query_arguments)
-            if error_message is not None:
-                raise web.HTTPError(400, error_message)
-
-            form = await self._render_form_wrapper(user)
-            self.finish(form)
-            return
-
         try:
             await super().get(for_user, server_name)
         except web.HTTPError as e:
@@ -122,10 +111,10 @@ class SpawnHandler(JHSpawnHandler):
                 400, f"{spawner._log_name} is pending {spawner.pending}"
             )
 
-        # Parse and validate options provided by user
-        error_message, form_options = self._validate_mandatory_options(configs, self.request.body_arguments)
-        if error_message is not None:
-            raise web.HTTPError(400, error_message)
+        try:
+            form_options = json.loads(self.get_body_argument('payload'))
+        except json.JSONDecodeError:
+            raise web.HTTPError(400, "Invalid JSON in form payload")
 
         start_time_spawn = time.time()
 
@@ -204,10 +193,10 @@ class SpawnHandler(JHSpawnHandler):
             next_url = url_concat(url_path_join("user", user.escaped_name, "customenvs", server_name), query_params)
         else: # LCG release
             next_url = self.get_next_url(user, default=url_path_join(self.hub.base_url, "spawn-pending", user.escaped_name, server_name))
-            if options[configs.use_jupyterlab_field] == 'checked':
+            if options[configs.use_jupyterlab_field]:
                 # Open in SWAN (we have "next" argument)
                 if 'next' in self.request.query_arguments:
-                    next_url += f"&{configs.use_jupyterlab_field}={options[configs.use_jupyterlab_field]}"
+                    next_url += "&use-jupyterlab=true"
                 # User requested to open a file
                 elif options.get(configs.file):
                     next_url = url_path_join("user", user.escaped_name, "lab", "tree", *options[configs.file].split('/'))
@@ -220,7 +209,6 @@ class SpawnHandler(JHSpawnHandler):
         return form
 
     async def _render_form(self, for_user, spawner_options_form, message='', *args, **kwargs):
-        configs = SpawnHandlersConfigs.instance()
         auth_state = await for_user.get_auth_state()
 
         return await self.render_template('spawn.html',
@@ -232,36 +220,8 @@ class SpawnHandler(JHSpawnHandler):
                                         self.request.uri, {"_xsrf": self.xsrf_token.decode('ascii')}
                                     ),
                                     spawner=for_user.spawner,
-                                    tn_enabled=configs.tn_enabled,
                                     )
 
-
-    def _validate_mandatory_options(self, configs: SpawnHandlersConfigs, raw_options: dict):
-        """
-        Some options are mandatory and need to be checked before rendering the form or spawning the session.
-        This function checks the mandatory options and returns an error message if any of them are invalid, along with
-        the decoded options.
-        """
-        decoded_options = {}
-        for key, byte_list in raw_options.items():
-            decoded_options[key] = [bs.decode('utf8') for bs in byte_list]
-        for key, byte_list in self.request.files.items():
-            decoded_options['%s_file' % key] = byte_list
-
-        # Check if the software source is either an LCG release or a custom environment
-        if configs.software_source in decoded_options:
-            selected_software_source = decoded_options[configs.software_source][0]
-            if selected_software_source not in (configs.lcg_rel_field, configs.customenv_special_type):
-                return f'Invalid software source: {selected_software_source}', decoded_options
-
-        # Check: TN access can only be requested for TN-enabled deployments
-        if configs.use_tn_field in decoded_options:
-            selected_use_tn = decoded_options[configs.use_tn_field][0].lower() in ('true', 'on')
-            if configs.tn_enabled != selected_use_tn:
-                return f'Invalid selection for TN access: {selected_use_tn}', decoded_options
-
-        # All good
-        return None, decoded_options
 
     def _log_spawn_metrics(self, user, options, spawn_duration_sec, spawn_exception=None):
         """
@@ -273,7 +233,7 @@ class SpawnHandler(JHSpawnHandler):
         configs = SpawnHandlersConfigs.instance()
 
         for (key, value) in options.items():
-            if key == configs.user_script_env_field:
+            if key == configs.user_env_script_field:
                 # For the environment script, we want to log only whether it is set or not, not the actual value
                 value_cleaned = 'set' if value else 'not_set'
             else:

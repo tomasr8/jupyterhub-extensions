@@ -107,6 +107,13 @@ os.environ['SWANHUB_ENV'] = 'dev'
 c.Application.log_level = 'DEBUG'
 c.Spawner.debug = True
 
+# Tornado settings
+# ================================================
+c.JupyterHub.tornado_settings = {
+    "static_hash_cache": False,  # Do not cache static files
+    "serve_traceback": True,     # Show a traceback for unhandled errors in the response
+}
+
 # Auth configuration
 # ================================================
 
