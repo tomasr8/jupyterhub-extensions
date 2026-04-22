@@ -36,21 +36,23 @@ class SwanKubeSpawner(define_SwanSpawner_from(KubeSpawner)):
         """Perform extra configurations required for SWAN session spawning in
         kubernetes.
         """
+        opts = self.user_options
+
         # CPU limit is set to what the user selects in the form
         # The request (guarantee) is statically set in the chart;
         # the resulting overcommit is acceptable since users stay idle
         # most of the time
-        self.cpu_limit = self.user_options[self.user_n_cores]
+        self.cpu_limit = opts['cores']
 
-        # Memory limit is set to what the user selects in the form
-        # The request (guarantee) is a fraction of the above
-        self.mem_limit = self.user_options[self.user_memory]
-        self.mem_guarantee = ceil(self.mem_limit * self.mem_request_fraction)
+        # Memory limit is set to what the user selects in the form.
+        # Internal representation is an int in GB; format for Kubernetes here.
+        self.mem_limit = f"{opts['memory']}G"
+        self.mem_guarantee = ceil(opts['memory'] * self.mem_request_fraction)
 
         # An Alma9-based user image is configured by default via the chart
         # settings, but users could still select a CentOS7 platform.
         # In that case, reconfigure to use a CentOS7-based user image
-        if self.user_options[self.software_source] == self.lcg_special_type and 'centos7' in self.user_options[self.platform_field]:
+        if opts['source'] == 'lcg' and 'centos7' in opts['platform']:
             image = self.centos7_image
             if not image:
                 raise RuntimeError('The user selected the CentOS7 platform, but no CentOS7 image was configured')
@@ -58,7 +60,7 @@ class SwanKubeSpawner(define_SwanSpawner_from(KubeSpawner)):
 
         # If the user selected an Acc-Py based custom environment,
         # use the corresponding image.
-        if self.user_options[self.software_source] == self.customenv_special_type and self.user_options.get(self.builder) == 'accpy':
+        if opts['source'] == 'customenv' and opts.get('builder') == 'accpy':
             image = self.accpy['image']['name'] + ':' + self.accpy['image']['tag']
             if not image:
                 raise RuntimeError('The user selected an Acc-Py environment, but no Acc-Py image was configured')
@@ -80,6 +82,7 @@ class SwanKubeSpawner(define_SwanSpawner_from(KubeSpawner)):
         finally:
             username = self.user.name
             namespace = os.environ.get('POD_NAMESPACE', 'default')
+            opts = self.user_options
 
             # Delete Kubernetes secret storing EOS kerberos ticket of the user
             # Only needed when EOS is enabled (== local_home is False)
@@ -92,8 +95,8 @@ class SwanKubeSpawner(define_SwanSpawner_from(KubeSpawner)):
                     self.log.error(f'Error deleting secret {namespace}:{eos_secret_name}')
 
             # Cleanup for computing integrations (Spark, HTCondor)
-            clean_spark = self.user_options.get(self.spark_cluster_field, 'none') != 'none'
-            clean_condor = self.user_options.get(self.condor_pool, 'none') != 'none'
+            clean_spark = opts.get('cluster', 'none') != 'none'
+            clean_condor = opts.get('condor', 'none') != 'none'
             if clean_spark or clean_condor:
                 # Delete NodePort service opening ports for computing integrations
                 computing_ports_service = f'computing-ports-{username}'
@@ -113,7 +116,7 @@ class SwanKubeSpawner(define_SwanSpawner_from(KubeSpawner)):
                         self.log.error('Error deleting secret {namespace}:{hadoop_secret_name}: {e}')
 
             # free GPU update
-            gpu_flavour = self.user_options.get('gpu')
+            gpu_flavour = opts.get('gpu')
             if gpu_flavour and gpu_flavour.lower() != 'none':
                 try:
                     self.gpus._update_free_gpu_flavours()

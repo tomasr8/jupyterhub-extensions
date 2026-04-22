@@ -5,33 +5,13 @@ from traitlets.config.configurable import Config, SingletonConfigurable
 
 
 class SpawnHandlersConfigs(SingletonConfigurable):
-    """
-        Singleton class where all the configurations are stored
-    """
+    """SwanHub's own configuration."""
 
-    software_source = 'software_source'
-
-    builder = 'builder'
-
-    builder_version = 'builder_version'
-
-    repository = 'repository'
-
-    lcg_rel_field = 'lcg'
-
-    spark_cluster_field = 'clusters'
-
-    user_script_env_field = 'scriptenv'
-
-    file = 'file'
-
-    user_interface = 'user_interface'
-
-    use_jupyterlab_field = 'use-jupyterlab'
-
+    # Name of the URL query arg / form field used to request TN access.
+    # Not a user_options key -- it's checked against the raw request body
+    # in _validate_mandatory_options to prevent TN access requests on a
+    # non-TN deployment (and vice-versa).
     use_tn_field = 'use-tn'
-
-    customenv_special_type = 'customenv'
 
     tn_enabled = Bool(
         default_value=False,

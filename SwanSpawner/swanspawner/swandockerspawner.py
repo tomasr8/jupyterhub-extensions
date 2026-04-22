@@ -1,5 +1,4 @@
 import contextlib
-import json
 import os
 import random
 import subprocess
@@ -11,6 +10,7 @@ from socket import (
 )
 
 import psutil
+import yaml
 from dockerspawner import SystemUserSpawner
 from traitlets import (
     Bool,
@@ -90,6 +90,7 @@ class SwanDockerSpawner(define_SwanSpawner_from(SystemUserSpawner)):
         env = super().get_env()
 
         username = self.user.name
+        opts = self.user_options
 
         # Only dockerspawner has these vars, and for now is the only one that needs this code
         if hasattr(self, 'extra_host_config') and hasattr(self, 'extra_create_kwargs'):
@@ -102,10 +103,11 @@ class SwanDockerSpawner(define_SwanSpawner_from(SystemUserSpawner)):
                 self.extra_host_config['port_bindings'][self.port] = (self.host_ip,)
 
             if self.offload:
-                cluster = self.user_options[self.spark_cluster_field]
+                cluster = opts['cluster']
                 env['SPARK_CLUSTER_NAME'] = cluster
                 env['SPARK_USER'] = username
-                env['MAX_MEMORY'] = self.user_options[self.user_memory]
+                # Internal representation is int GB; subclasses format for their own needs.
+                env['MAX_MEMORY'] = f"{opts['memory']}G"
 
                 if cluster == 'k8s':
                     env['SPARK_CONFIG_SCRIPT'] = self.k8s_config_script
@@ -136,26 +138,46 @@ class SwanDockerSpawner(define_SwanSpawner_from(SystemUserSpawner)):
 
         return env
 
+    def _api_defaults(self):
+        """
+        Return a dict of sensible defaults sourced from the v2 YAML config, for
+        the case where this spawner is invoked without a form (e.g. via API or
+        Binder). Picks the first recommended LCG release and the 'general'
+        resource profile.
+        """
+        with open(self.options_form_config) as f:
+            config = yaml.safe_load(f) or {}
+
+        recommended = (config.get('lcg_releases') or {}).get('recommended', {})
+        first_release = (recommended.get('releases') or [{}])[0]
+        general = (config.get('resource_profiles') or {}).get('general', {})
+
+        return {
+            'release':  first_release.get('value', 'LCG_109_swan'),
+            'platform': first_release.get('platform', 'x86_64-el9-gcc13-opt'),
+            'cluster':  'none',
+            'cores':    (general.get('cores')  or [2])[0],
+            'memory':   (general.get('memory') or [8])[0],
+        }
+
     async def start(self):
         """Perform the operations necessary for mounting
         EOS, GPU support, authenticating HDFS and authenticating spark clusters.
         """
-
-        # default values when spawned via API (e.g binder)
-        with open(self.options_form_config) as json_file:
-            options_form_config_data = json.load(json_file)
-
         username = self.user.name
-        platform = self.user_options.get(self.platform_field, options_form_config_data['lcg_options'][1]['platforms'][1]['value']) # Default: Alma9 (x86_64-el9-gcc13-opt)
-        lcg_rel = self.user_options.get(self.lcg_rel_field, options_form_config_data['lcg_options'][1]['lcg']['value']) # Default: LCG_105a_swan
-        cluster = self.user_options.get(self.spark_cluster_field, options_form_config_data['lcg_options'][1]['clusters'][0]['value']) # Default: none
-        cpu_quota = self.user_options.get(self.user_n_cores, int(options_form_config_data['lcg_options'][1]['cores'][0]['value'])) # Default: 2
-        mem_limit = self.user_options.get(self.user_memory, options_form_config_data['lcg_options'][1]['memory'][0]['value'] + 'G') # Default: 8G
+        opts = self.user_options
+        defaults = self._api_defaults()
+
+        platform  = opts.get('platform', defaults['platform'])
+        lcg_rel   = opts.get('release',  defaults['release'])
+        cluster   = opts.get('cluster',  defaults['cluster'])
+        cpu_quota = opts.get('cores',    defaults['cores'])
+        mem_limit = f"{opts.get('memory', defaults['memory'])}G"
 
         try:
             start_time_configure_user = time.time()
 
-            if not self.local_home and self.lcg_rel_field in self.user_options and self.auth_script:
+            if not self.local_home and 'release' in opts and self.auth_script:
                 # When using CERNBox as home, obtain credentials for the user
                 subprocess.call(['sudo', self.auth_script, username], timeout=60)
                 self.log.debug("We are in SwanSpawner. Credentials for %s were requested.", username)

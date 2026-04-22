@@ -1,0 +1,68 @@
+/* SWAN options form styles.
+ * Scoped via #swan-options-form so they don't leak out into the rest of
+ * the JupyterHub UI. */
+
+#swan-options-form .swan-card {
+  cursor: pointer;
+  transition: border-color .15s, background-color .15s;
+}
+#swan-options-form .swan-card:hover:not(.active) {
+  border-color: var(--bs-primary) !important;
+}
+#swan-options-form .swan-card.active {
+  border: 2px solid var(--bs-primary) !important;
+  background-color: color-mix(in srgb, var(--bs-primary) 6%, var(--bs-body-bg));
+}
+#swan-options-form .swan-card.active .swan-card-title {
+  color: var(--bs-primary);
+}
+
+#swan-options-form .swan-intf-btn {
+  flex: 1;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: background-color .15s, opacity .15s;
+  font-family: inherit;
+  opacity: .65;
+}
+#swan-options-form .swan-intf-btn.active {
+  background: var(--bs-body-bg);
+  opacity: 1;
+  font-weight: 600;
+  box-shadow: 0 0 0 1px var(--bs-border-color);
+}
+#swan-options-form .swan-intf-btn:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+#swan-options-form .swan-summary-select {
+  /* border: none; */
+  /* background: transparent; */
+  /* font-weight: 600; */
+  /* padding: 2px 18px 2px 4px; */
+  cursor: pointer;
+  /* color: var(--bs-primary); */
+}
+#swan-options-form .swan-summary-select:focus {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 1px;
+  border-radius: 4px;
+}
+#swan-options-form .swan-summary-select:disabled {
+  color: var(--bs-secondary);
+  cursor: not-allowed;
+}
+
+#swan-options-form .swan-chev {
+  transition: transform .2s ease;
+  display: inline-block;
+}
+#swan-options-form .swan-chev.open {
+  transform: rotate(90deg);
+}
+
+#swan-options-form .swan-meta {
+  font-size: 11px;
+}

@@ -44,8 +44,7 @@ class SpawnHandler(JHSpawnHandler):
         if spawner.ready:
             # User has a session running, redirect to the correct page,
             # according to the user's choice and the current session
-            spawner_software_source = spawner.user_options.get(configs.software_source)
-            next_url = url_path_join("user", user.escaped_name, "customenvs" if spawner_software_source == configs.customenv_special_type else "")
+            next_url = url_path_join("user", user.escaped_name, "customenvs" if spawner.user_options.get('source') == 'customenv' else "")
 
             page = await self.render_template('spawn_conflict.html', for_user=user, spawner=spawner, next_url=next_url)
             self.finish(page)
@@ -198,33 +197,34 @@ class SpawnHandler(JHSpawnHandler):
             self.set_login_cookie(user)
 
 
-        if options.get(configs.software_source) == configs.customenv_special_type:
-            # Add the query arguments to the URL
+        if options.get('source') == 'customenv':
+            # `options` was computed by SwanSpawner.options_from_form and carries
+            # snake_case keys and native types. Builder + builder_version are
+            # pre-split by the spawner even on the stacks_for_customenvs flip
+            # path (e.g. release "lhcb-default" -> builder="lhcb", version="default"),
+            # so no parsing is needed here.
             query_params = {
-                configs.repository: options.get(configs.repository, ''),
-                configs.builder: options.get(configs.builder),
-                configs.file: options.get(configs.file, ''),
-                configs.user_interface: options.get(configs.user_interface, 'lab'),
+                'repository':     options.get('repository', ''),
+                'builder':        options.get('builder', ''),
+                'file':           options.get('file', ''),
+                'user_interface': options.get('user_interface', 'lab'),
             }
-            # If the builder has a version, pass it as an argument of the query
-            if options.get(configs.builder_version):
-                query_params[configs.builder_version] = options[configs.builder_version]
-            elif options.get(configs.lcg_rel_field):
-                query_params[configs.builder], query_params[configs.builder_version] = options[configs.lcg_rel_field].split('-')
-            if options.get(configs.spark_cluster_field, "none") == "hadoop-nxcals":
-                query_params["nxcals"] = True
+            if options.get('builder_version'):
+                query_params['builder_version'] = options['builder_version']
+            if options.get('cluster', 'none') == 'hadoop-nxcals':
+                query_params['nxcals'] = True
 
             # Execution SwanCustomEnvs extension with the corresponding query arguments
             next_url = url_concat(url_path_join("user", user.escaped_name, "customenvs", server_name), query_params)
         else: # LCG release
             next_url = self.get_next_url(user, default=url_path_join(self.hub.base_url, "spawn-pending", user.escaped_name, server_name))
-            if options[configs.use_jupyterlab_field] == 'checked':
+            if options.get('use_jupyterlab'):
                 # Open in SWAN (we have "next" argument)
                 if 'next' in self.request.query_arguments:
-                    next_url += f"&{configs.use_jupyterlab_field}={options[configs.use_jupyterlab_field]}"
+                    next_url += "&use-jupyterlab=true"
                 # User requested to open a file
-                elif options.get(configs.file):
-                    next_url = url_path_join("user", user.escaped_name, "lab", "tree", *options[configs.file].split('/'))
+                elif options.get('file'):
+                    next_url = url_path_join("user", user.escaped_name, "lab", "tree", *options['file'].split('/'))
 
         self.redirect(next_url)
 
@@ -255,18 +255,18 @@ class SpawnHandler(JHSpawnHandler):
         Some options are mandatory and need to be checked before rendering the form or spawning the session.
         This function checks the mandatory options and returns an error message if any of them are invalid, along with
         the decoded options.
+
+        The spawn form now POSTs a single JSON 'payload' field; content
+        validation lives in SwanSpawner.options_from_form. This function
+        only enforces the TN-access invariant -- users mustn't be able to
+        request TN access on a non-TN deployment (or vice versa) by
+        crafting a URL.
         """
         decoded_options = {}
         for key, byte_list in raw_options.items():
             decoded_options[key] = [bs.decode('utf8') for bs in byte_list]
         for key, byte_list in self.request.files.items():
             decoded_options['%s_file' % key] = byte_list
-
-        # Check if the software source is either an LCG release or a custom environment
-        if configs.software_source in decoded_options:
-            selected_software_source = decoded_options[configs.software_source][0]
-            if selected_software_source not in (configs.lcg_rel_field, configs.customenv_special_type):
-                return f'Invalid software source: {selected_software_source}', decoded_options
 
         # Check: TN access can only be requested for TN-enabled deployments
         if configs.use_tn_field in decoded_options:
@@ -284,17 +284,21 @@ class SpawnHandler(JHSpawnHandler):
         """
 
         host = gethostname().split('.')[0]
-        configs = SpawnHandlersConfigs.instance()
+
+        # Skip the env-script key -- users often reference personal paths
+        # there and we don't want those leaking into metric labels.
+        SENSITIVE_KEYS = {'script_env'}
 
         for (key, value) in options.items():
-            if key != configs.user_script_env_field:
-                value_cleaned = str(value).replace('/', '_')
+            if key in SENSITIVE_KEYS:
+                continue
+            value_cleaned = str(value).replace('/', '_')
 
-                self._log_metric(user.name, host, ".".join(
-                    ['spawn_form', key]), value_cleaned)
+            self._log_metric(user.name, host, ".".join(
+                ['spawn_form', key]), value_cleaned)
 
         spawn_context_key = ".".join(
-            [options.get(configs.lcg_rel_field, "CustomEnv"), options.get(configs.spark_cluster_field, "none")])
+            [options.get('release') or "CustomEnv", options.get('cluster', 'none')])
         if not spawn_exception:
             # Add spawn success (no exception) and duration to the log and send as metrics
             spawn_exc_class = "None"
