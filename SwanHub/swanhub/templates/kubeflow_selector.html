@@ -1,0 +1,23 @@
+{% extends "templates/spawn.html" %}
+{% from "_macros.html" import swan_loader with context %}
+{% if announcement_spawn is string %}
+  {% set announcement = announcement_spawn %}
+{% endif %}
+
+{% block stylesheet %}
+  {{ super() }}
+  <link rel="stylesheet" type="text/css" href="{{ static_url('swan/options-form/options-form.css') }}">
+{% endblock %}
+
+{% block main %}
+<main class="container justify-content-start" style="max-width: 750px;">
+  <div class="row">
+    <div id="swan-kubeflow-selector">
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+{% block script %}
+<script type="module" src="{{ static_url('swan/options-form/options-form.js') }}"></script>
+{% endblock %}

@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { SpawnForm } from "./SpawnForm";
+import { Form } from "./kubeflow";
 import type { DynamicFormInfo, FormConfig } from "./config";
 import "./styles.css";
 
@@ -26,5 +27,16 @@ function init(): void {
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", init);
 } else {
-  init();
+  // init();
+  initKubeflowSelector();
+}
+
+function initKubeflowSelector(): void {
+  const mount = document.getElementById("swan-kubeflow-selector")!;
+  const root = createRoot(mount);
+  root.render(
+    <StrictMode>
+      <Form />
+    </StrictMode>,
+  );
 }
